@@ -1,0 +1,242 @@
+// ─── Translations for English, Hindi, Gujarati ────────────────────────────
+export const TRANSLATIONS = {
+  en: {
+    // Nav
+    home: 'Home', ledger: 'Ledger', summary: 'Summary', settings: 'Settings',
+    // Home
+    mySites: 'My Sites', addFirstSite: 'Add First Site', newSite: 'New Site',
+    addSite: 'Add Site', siteName: 'Site Name', sitePlaceholder: 'e.g. Rajnagar Project',
+    activeSites: 'Active Projects', completedSites: 'Completed',
+    noSites: 'No Projects Yet', noSitesDesc: 'Add your first construction project to start tracking expenses.',
+    totalSpent: 'Total Spent', investment: 'Expense',
+    // Site details
+    newSiteTitle: 'New Construction Site', createSite: 'Create Site',
+    ownerName: 'Owner / Client Name', ownerNamePlaceholder: 'e.g. Mr. Rajesh Patel',
+    ownerPhone: 'Mobile Number', ownerPhonePlaceholder: 'e.g. 9876543210',
+    siteAddress: 'Location / Address', siteAddressPlaceholder: 'e.g. 12, Alkapuri Society, Vadodara',
+    siteDetails: 'Site Details',
+    // Ledger
+    dailyLedger: 'Daily Ledger', addEntry: 'Add Expense', addFirstEntry: 'Add First Expense',
+    editEntry: 'Edit Expense', entryDeleted: 'Entry deleted',
+    noEntries: 'No Entries Yet', noEntriesDesc: 'Start adding labor or material expenses.',
+    editSiteName: 'Edit Site Name',
+    markCompleted: 'Mark as Completed', reopenProject: 'Reopen Project',
+    markCompletedQ: 'Mark as Completed?', reopenProjectQ: 'Reopen Project?',
+    willBeCompleted: 'will be moved to completed projects.',
+    willBeReopened: 'will be reopened as an active project.',
+    complete: 'Complete', reopen: 'Reopen',
+    projectCompleted: 'This project is completed. Reopen to add new entries.',
+    projectDone: 'Project Completed', projectDoneDesc: 'Reopen this project from settings to add new entries.',
+    addPayment: 'Add Payment',
+    // Payment Log
+    logPayment: 'Log Payment', amountReceived: 'Amount Received',
+    paymentMethod: 'Payment Method', dateOfReceipt: 'Date of Receipt',
+    referenceNote: 'Reference / Note', notePlaceholderPayment: 'Enter transaction ID or notes...',
+    savePaymentLog: 'Save Payment Log',
+    bankTransfer: 'Bank Transfer', cash: 'Cash', upi: 'UPI',
+    // Add Entry tabs
+    labor: 'Labor', material: 'Material', misc: 'Misc',
+    // Labor categories
+    majur: 'Laborer', karigar: 'Artisan', mason: 'Mason', plumber: 'Plumber',
+    electrician: 'Electrician', carpenter: 'Carpenter', painter: 'Painter',
+    welder: 'Welder', salaat: 'Centering', helper: 'Helper',
+    karigarHelper: 'Artisan + Helper', others: 'Others',
+    // Material presets
+    cement: 'Cement', steel: 'Steel', sand: 'Sand', bricks: 'Bricks', paint: 'Paint',
+    wood: 'Wood', tiles: 'Tiles', pipes: 'Pipes', gravel: 'Gravel', other: 'Other',
+    qtyLabel: 'Quantity', unitLabel: 'units', priceLabel: 'Price per Unit',
+    // Misc categories
+    food: 'Food', rent: 'Rent', transport: 'Transport', tools: 'Tools',
+    // Form
+    laborType: 'Labor Type', materialType: 'Material Type', category: 'Category',
+    amount: 'Amount (₹) *', date: 'Date', note: 'Note (Optional)',
+    qtyPrice: '🧮 Qty × Price', directAmount: '₹ Direct Amount',
+    materialName: 'Material Name *', customMatPlaceholder: 'e.g. Waterproofing, AAC blocks...',
+    notePlaceholder: 'Supplier, brand, details...',
+    save: 'Save', cancel: 'Cancel',
+    // Summary
+    summaryTitle: 'Financial Summary', projectAnalytics: 'Project Analytics',
+    expenseBreakdown: 'Expense Breakdown', allSites: 'All Projects', selectSite: 'Select Project', 
+    grandTotal: 'Grand Total', cumulativeExpense: 'Cumulative Expense', entriesCount: 'entries',
+    bySite: 'Breakdown by Site', byType: 'Expense Breakdown',
+    noAnalytics: 'No analytics available for this selection.',
+    // Settings
+    settingsTitle: 'Settings', appSettings: 'Application Settings', managesites: 'Project Administration',
+    shareExport: 'Share & Export', dataStorage: 'Data & Portability',
+    appInfo: 'App Info', appearance: 'Appearance', language: 'Language',
+    darkMode: 'Dark Theme', lightMode: 'Light Theme', toggleMode: 'Toggle interface mode',
+    clearAll: 'Clear All Application Data', clearAllSub: 'Extreme Caution: This wipes all stored data.',
+    exportData: 'Export Backup (JSON)', exportSub: 'Download all data as a backup',
+    open: 'Open', totalSites: 'Total Sites', totalValue: 'Total Value',
+    archiveSite: 'Archive Project?', archiveSiteDesc: 'This will permanently remove the project and its history.',
+    resetApp: 'Reset Application?', resetAppDesc: 'All data will be wiped. This cannot be undone.',
+    shareSummary: 'Share Project Summary', selectSiteToShare: 'Select project to share',
+    openWhatsApp: 'Open WhatsApp', installPhone: 'Install on Phone',
+    v1: 'Radadiya PWA v1.0', optimized: 'Optimized for high-performance field usage.',
+    stable: 'Stable', offlineReady: 'Offline Ready',
+    // Site Report
+    projectReport: 'Project Report', fundsReceived: 'Funds Received', balancePayable: 'Balance Payable',
+    surplusCredit: 'Surplus Credit', paymentLedger: 'Payment Ledger', receiptDate: 'Receipt Date',
+    keepReceipt: 'Keep Receipt', deleteRecord: 'Delete Record',
+  },
+  hi: {
+    // Nav
+    home: 'होम', ledger: 'खाता', summary: 'सारांश', settings: 'सेटिंग',
+    // Home
+    mySites: 'मेरी साइट्स', addFirstSite: 'पहली साइट जोड़ें', newSite: 'नई साइट',
+    addSite: 'साइट जोड़ें', siteName: 'साइट का नाम', sitePlaceholder: 'जैसे राजनगर प्रोजेक्ट',
+    activeSites: 'सक्रिय प्रोजेक्ट', completedSites: 'पूर्ण',
+    noSites: 'कोई प्रोजेक्ट नहीं', noSitesDesc: 'खर्चों को ट्रैक करने के लिए पहला प्रोजेक्ट जोड़ें।',
+    totalSpent: 'कुल खर्चा', investment: 'निवेश',
+    // Site details
+    newSiteTitle: 'नई निर्माण साइट', createSite: 'साइट बनाएँ',
+    ownerName: 'मालिक / ग्राहक का नाम', ownerNamePlaceholder: 'जैसे श्री राजेश पटेल',
+    ownerPhone: 'मोबाइल नंबर', ownerPhonePlaceholder: 'जैसे 9876543210',
+    siteAddress: 'पता / लोकेशन', siteAddressPlaceholder: 'जैसे 12, अलकापुरी सोसायटी, वडोदरा',
+    siteDetails: 'साइट विवरण',
+    // Ledger
+    dailyLedger: 'दैनिक खाता', addEntry: 'खर्च जोड़ें', addFirstEntry: 'पहला खर्च जोड़ें',
+    editEntry: 'खर्च बदलें', entryDeleted: 'एंट्री हटा दी गई',
+    noEntries: 'कोई एंट्री नहीं', noEntriesDesc: 'मजदूरी या सामग्री खर्च जोड़ें।',
+    editSiteName: 'साइट का नाम बदलें',
+    markCompleted: 'पूर्ण करें', reopenProject: 'फिर से खोलें',
+    markCompletedQ: 'पूर्ण करना चाहते हैं?', reopenProjectQ: 'फिर से खोलना चाहते हैं?',
+    willBeCompleted: 'को पूर्ण साइट्स में ले जाया जाएगा।',
+    willBeReopened: 'को फिर से चालू किया जाएगा।',
+    complete: 'पूर्ण करें', reopen: 'खोलें',
+    projectCompleted: 'यह प्रोजेक्ट पूर्ण है। नई एंट्री जोड़ने के लिए फिर से खोलें।',
+    projectDone: 'प्रोजेक्ट पूर्ण', projectDoneDesc: 'नई एंट्री जोड़ने के लिए सेटिंग्स से फिर से खोलें।',
+    addPayment: 'भुगतान जोड़ें',
+    // Payment Log
+    logPayment: 'भुगतान दर्ज करें', amountReceived: 'प्राप्त राशि',
+    paymentMethod: 'भुगतान का तरीका', dateOfReceipt: 'प्राप्ति की तारीख',
+    referenceNote: 'संदर्भ / नोट', notePlaceholderPayment: 'ट्रांजैक्शन ID या नोट...',
+    savePaymentLog: 'भुगतान सेव करें',
+    bankTransfer: 'बैंक ट्रांसफर', cash: 'नकद', upi: 'UPI',
+    // Add Entry tabs
+    labor: 'मजदूरी', material: 'सामग्री', misc: 'अन्य',
+    // Labor categories
+    majur: 'मजदूर', karigar: 'कारीगर', mason: 'राजमिस्त्री', plumber: 'प्लंबर',
+    electrician: 'इलेक्ट्रिशियन', carpenter: 'बढ़ई', painter: 'पेंटर',
+    welder: 'वेल्डर', salaat: 'सेंटरिंग', helper: 'हेल्पर',
+    karigarHelper: 'कारीगर + हेल्पर', others: 'अन्य',
+    // Material presets
+    cement: 'सीमेंट', steel: 'स्टील', sand: 'रेत', bricks: 'ईंटें', paint: 'पेंट',
+    wood: 'लकड़ी', tiles: 'टाइल्स', pipes: 'पाइप', gravel: 'कंक्रीट', other: 'अन्य',
+    qtyLabel: 'मात्रा', unitLabel: 'इकाई', priceLabel: 'प्रति इकाई मूल्य',
+    // Misc categories
+    food: 'खाना', rent: 'किराया', transport: 'वाहन', tools: 'औज़ार',
+    // Form
+    laborType: 'मजदूरी का प्रकार', materialType: 'सामग्री का प्रकार', category: 'श्रेणी',
+    amount: 'राशि (₹) *', date: 'तारीख', note: 'नोट (वैकल्पिक)',
+    qtyPrice: '🧮 मात्रा × मूल्य', directAmount: '₹ सीधी राशि',
+    materialName: 'सामग्री का नाम *', customMatPlaceholder: 'जैसे वाटरप्रूफिंग...',
+    notePlaceholder: 'आपूर्तिकर्ता, ब्रांड...',
+    save: 'सेव करें', cancel: 'रद्द करें',
+    // Summary
+    summaryTitle: 'वित्तीय सारांश', projectAnalytics: 'प्रोजेक्ट विश्लेषण',
+    expenseBreakdown: 'खर्च का विवरण', allSites: 'सभी प्रोजेक्ट', selectSite: 'प्रोजेक्ट चुनें', 
+    grandTotal: 'कुल योग', cumulativeExpense: 'कुल खर्च', entriesCount: 'एंट्री',
+    bySite: 'साइट के अनुसार विवरण', byType: 'खर्च का विवरण',
+    noAnalytics: 'इस चयन के लिए कोई विश्लेषण उपलब्ध नहीं है।',
+    // Settings
+    settingsTitle: 'सेटिंग', appSettings: 'एप्लिकेशन सेटिंग', managesites: 'प्रोजेक्ट प्रशासन',
+    shareExport: 'शेयर और निर्यात', dataStorage: 'डेटा और पोर्टेबिलिटी',
+    appInfo: 'ऐप जानकारी', appearance: 'दिखावट', language: 'भाषा',
+    darkMode: 'डार्क थीम', lightMode: 'लाइट थीम', toggleMode: 'इंटरफ़ेस मोड बदलें',
+    clearAll: 'एप्लिकेशन का सारा डेटा हटाएं', clearAllSub: 'सावधानी: यह सारा डेटा मिटा देगा।',
+    exportData: 'बैकअप निर्यात करें (JSON)', exportSub: 'बैकअप के रूप में सारा डेटा डाउनलोड करें',
+    open: 'खोलें', totalSites: 'कुल साइट्स', totalValue: 'कुल मूल्य',
+    archiveSite: 'प्रोजेक्ट आर्काइव करें?', archiveSiteDesc: 'यह प्रोजेक्ट और उसके इतिहास को हमेशा के लिए हटा देगा।',
+    resetApp: 'एप्लिकेशन रीसेट करें?', resetAppDesc: 'सारा डेटा मिटा दिया जाएगा। इसे वापस नहीं लाया जा सकता।',
+    shareSummary: 'प्रोजेक्ट सारांश शेयर करें', selectSiteToShare: 'शेयर करने के लिए प्रोजेक्ट चुनें',
+    openWhatsApp: 'WhatsApp खोलें', installPhone: 'फ़ोन पर इंस्टॉल करें',
+    v1: 'Radadiya PWA v1.0', optimized: 'उच्च प्रदर्शन उपयोग के लिए अनुकूलित।',
+    stable: 'स्थिर', offlineReady: 'ऑफलाइन तैयार',
+    // Site Report
+    projectReport: 'प्रोजेक्ट रिपोर्ट', fundsReceived: 'प्राप्त धनराशि', balancePayable: 'देय शेष',
+    surplusCredit: 'अतिरिक्त क्रेडिट', paymentLedger: 'भुगतान बही', receiptDate: 'प्राप्ति तिथि',
+    keepReceipt: 'रसीद रखें', deleteRecord: 'रिकॉर्ड हटाएं',
+  },
+  gu: {
+    // Nav
+    home: 'હોમ', ledger: 'ખાતાવહી', summary: 'સારાંશ', settings: 'સેટિંગ',
+    // Home
+    mySites: 'મારી સાઇટો', addFirstSite: 'પહેલી સાઇટ ઉમેરો', newSite: 'નવી સાઇટ',
+    addSite: 'સાઇટ ઉમેરો', siteName: 'સાઇટનું નામ', sitePlaceholder: 'દા.ત. રાજનગર પ્રોજેક્ટ',
+    activeSites: 'ચાલુ પ્રોજેક્ટ', completedSites: 'પૂર્ણ',
+    noSites: 'કોઈ પ્રોજેક્ટ નથી', noSitesDesc: 'ખર્ચ ટ્રેક કરવા પહેલો પ્રોજેક્ટ ઉમેરો.',
+    totalSpent: 'કુલ ખર્ચ', investment: 'ખર્ચ',
+    // Site details
+    newSiteTitle: 'નવી બાંધકામ સાઇટ', createSite: 'સાઇટ બનાવો',
+    ownerName: 'માલિક / પાર્ટીનું નામ', ownerNamePlaceholder: 'દા.ત. શ્રી રાજેશભાઈ પટેલ',
+    ownerPhone: 'મોબાઇલ નંબર', ownerPhonePlaceholder: 'દા.ત. 9876543210',
+    siteAddress: 'સરનામું / લોકેશન', siteAddressPlaceholder: 'દા.ત. 12, અલકાપુરી સોસાયટી, વડોદરા',
+    siteDetails: 'સાઇટ વિગતો',
+    // Ledger
+    dailyLedger: 'રોજની ખાતાવહી', addEntry: 'ખર્ચ ઉમેરો', addFirstEntry: 'પહેલો ખર્ચ ઉમેરો',
+    editEntry: 'ખર્ચ બદલો', entryDeleted: 'એન્ટ્રી ડિલીટ કરી',
+    noEntries: 'કોઈ એન્ટ્રી નથી', noEntriesDesc: 'મજૂરી અથવા સામાનનો ખર્ચ ઉમેરો.',
+    editSiteName: 'સાઇટનું નામ બદલો',
+    markCompleted: 'પૂર્ણ જાહેર કરો', reopenProject: 'ફરી શરૂ કરો',
+    markCompletedQ: 'પૂર્ણ જાહેર કરવું છે?', reopenProjectQ: 'ફરી શરૂ કરવું છે?',
+    willBeCompleted: 'ને પૂર્ણ થયેલ સાઇટમાં ખસેડવામાં આવશે.',
+    willBeReopened: 'ને ફરી શરૂ કરવામાં આવશે.',
+    complete: 'પૂર્ણ', reopen: 'શરૂ',
+    projectCompleted: 'આ પ્રોજેક્ટ પૂર્ણ થયો છે. નવી એન્ટ્રી માટે ફરી શરૂ કરો.',
+    projectDone: 'પ્રોજેક્ટ પૂર્ણ', projectDoneDesc: 'નવી એન્ટ્રી માટે સેટિંગમાંથી ફરી શરૂ કરો.',
+    addPayment: 'ચુકવણી ઉમેરો',
+    // Payment Log
+    logPayment: 'ચુકવણી નોંધો', amountReceived: 'મળેલ રકમ',
+    paymentMethod: 'ચુકવણીની રીત', dateOfReceipt: 'ચુકવણીની તારીખ',
+    referenceNote: 'સંદર્ભ / નોંધ', notePlaceholderPayment: 'ટ્રાન્ઝેક્શન ID અથવા નોંધ...',
+    savePaymentLog: 'ચુકવણી સેવ કરો',
+    bankTransfer: 'બેંક ટ્રાન્સફર', cash: 'રોકડ', upi: 'UPI',
+    // Add Entry tabs
+    labor: 'મજૂરી', material: 'સામાન', misc: 'પરચુરણ',
+    // Labor categories
+    majur: 'મજૂર', karigar: 'કારીગર', mason: 'ચણતર', plumber: 'પ્લમ્બર',
+    electrician: 'ઇલેક્ટ્રિશિયન', carpenter: 'સુથાર', painter: 'રંગકામ',
+    welder: 'વેલ્ડર', salaat: 'સેન્ટરિંગ', helper: 'હેલ્પર',
+    karigarHelper: 'કારીગર + હેલ્પર', others: 'બીજું',
+    // Material presets
+    cement: 'સિમેન્ટ', steel: 'લોખંડ', sand: 'રેતી', bricks: 'ઈંટો', paint: 'કલર',
+    wood: 'લાકડું', tiles: 'ટાઇલ્સ', pipes: 'પાઇપ', gravel: 'કપચી', other: 'બીજું',
+    qtyLabel: 'જથ્થો', unitLabel: 'નંગ/એકમ', priceLabel: 'એકમ દીઠ ભાવ',
+    // Misc categories
+    food: 'જમવાનું', rent: 'ભાડું', transport: 'વાહન', tools: 'ઓજાર',
+    // Form
+    laborType: 'મજૂરીનો પ્રકાર', materialType: 'સામાનનો પ્રકાર', category: 'શ્રેણી',
+    amount: 'રકમ (₹) *', date: 'તારીખ', note: 'નોંધ (વૈકલ્પિક)',
+    qtyPrice: '🧮 જથ્થો × ભાવ', directAmount: '₹ સીધી રકમ',
+    materialName: 'સામાનનું નામ *', customMatPlaceholder: 'દા.ત. વૉટરપ્રૂફિંગ...',
+    notePlaceholder: 'સપ્લાયર, બ્રાન્ડ, વિગતો...',
+    save: 'સેવ કરો', cancel: 'રદ કરો',
+    // Summary
+    summaryTitle: 'નાણાકીય સારાંશ', projectAnalytics: 'પ્રોજેક્ટ વિશ્લેષણ',
+    expenseBreakdown: 'ખર્ચની વિગત', allSites: 'બધા પ્રોજેક્ટ', selectSite: 'પ્રોજેક્ટ પસંદ કરો', 
+    grandTotal: 'કુલ સરવાળો', cumulativeExpense: 'કુલ ખર્ચ', entriesCount: 'એન્ટ્રી',
+    bySite: 'પ્રોજેક્ટ પ્રમાણે વિગત', byType: 'ખર્ચની વિગત',
+    noAnalytics: 'આ પસંદગી માટે કોઈ વિશ્લેષણ ઉપલબ્ધ નથી.',
+    // Settings
+    settingsTitle: 'સેટિંગ', appSettings: 'એપ્લિકેશન સેટિંગ', managesites: 'પ્રોજેક્ટ વહીવટ',
+    shareExport: 'શેર અને નિકાસ', dataStorage: 'ડેટા અને સ્ટોરેજ',
+    appInfo: 'એપ માહિતી', appearance: 'દેખાવ', language: 'ભાષા',
+    darkMode: 'ડાર્ક થીમ', lightMode: 'લાઇટ થીમ', toggleMode: 'ઇન્ટરફેસ મોડ બદલો',
+    clearAll: 'એપ્લિકેશનનો બધો ડેટા ભૂંસી નાખો', clearAllSub: 'સાવધાની: આ બધો ડેટા કાયમ માટે ભૂંસી નાખશે.',
+    exportData: 'બેકઅપ નિકાસ કરો (JSON)', exportSub: 'બેકઅપ તરીકે બધો ડેટા ડાઉનલોડ કરો',
+    open: 'ખોલો', totalSites: 'કુલ સાઇટો', totalValue: 'કુલ મૂલ્ય',
+    archiveSite: 'પ્રોજેક્ટ આર્કાઇવ કરવો છે?', archiveSiteDesc: 'આ પ્રોજેક્ટ અને તેનો ઇતિહાસ કાયમ માટે કાઢી નાખશે.',
+    resetApp: 'એપ્લિકેશન રીસેટ કરવી છે?', resetAppDesc: 'બધો ડેટા ભૂંસી નાખવામાં આવશે. આ પાછું લાવી શકાશે નહીં.',
+    shareSummary: 'પ્રોજેક્ટ સારાંશ શેર કરો', selectSiteToShare: 'શેર કરવા માટે પ્રોજેક્ટ પસંદ કરો',
+    openWhatsApp: 'WhatsApp ખોલો', installPhone: 'ફોન પર ઇન્સ્ટોલ કરો',
+    v1: 'Radadiya PWA v1.0', optimized: 'ઉચ્ચ પ્રદર્શન ક્ષેત્રના વપરાશ માટે ઓપ્ટિમાઇઝ.',
+    stable: 'સ્થિર', offlineReady: 'ઓફલાઇન તૈયાર',
+    // Site Report
+    projectReport: 'પ્રોજેક્ટ રિપોર્ટ', fundsReceived: 'મળેલ ભંડોળ', balancePayable: 'બાકી રકમ',
+    surplusCredit: 'વધારાની જમા રકમ', paymentLedger: 'ચુકવણી ખાતાવહી', receiptDate: 'રસીદની તારીખ',
+    keepReceipt: 'રસીદ રાખો', deleteRecord: 'રેકોર્ડ કાઢી નાખો',
+  },
+}
+
+export const LANG_NAMES = { en: 'English', hi: 'हिंदी', gu: 'ગુજરાતી' }
