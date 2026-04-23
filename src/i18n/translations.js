@@ -26,7 +26,7 @@ export const TRANSLATIONS = {
     willBeReopened: 'will be reopened as an active project.',
     complete: 'Complete', reopen: 'Reopen',
     projectCompleted: 'This project is completed. Reopen to add new entries.',
-    projectDone: 'Project Completed', projectDoneDesc: 'Reopen this project from settings to add new entries.',
+    projectDone: 'Project Completed', projectDoneDesc: 'Reopen this project to add new entries.',
     addPayment: 'Add Payment',
     // Payment Log
     logPayment: 'Log Payment', amountReceived: 'Amount Received',

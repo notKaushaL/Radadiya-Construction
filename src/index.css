@@ -42,6 +42,7 @@ html, body {
   --card-bg: #FFFFFF;
   --input-bg: #F5F5F5;
   --nav-bg: rgba(255,255,255,0.95);
+  --bg3: #EDEDED;
   --btn-bg: #000000;
   --btn-text: #FFFFFF;
 }
@@ -49,6 +50,7 @@ html, body {
 [data-theme="dark"] {
   --bg: #161616;
   --bg2: #1E1E1E;
+  --bg3: #252525;
   --text: #F0F0F0;
   --text2: #AAAAAA;
   --text3: #606060;

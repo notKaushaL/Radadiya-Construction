@@ -1,4 +1,4 @@
-import { ArrowRight, Building2 } from 'lucide-react'
+import { ArrowRight, ArrowLeft, Building2 } from 'lucide-react'
 import useStore from '../store/useStore'
 import { formatINR } from '../utils/helpers'
 import { useLang } from '../App'
@@ -8,7 +8,7 @@ import { useLang } from '../App'
  * Shown when user taps "Ledger" from the bottom nav without a siteId.
  * Lists all sites so the user can pick which one to open.
  */
-export default function SitePickerScreen({ onNavigate }) {
+export default function SitePickerScreen({ onNavigate, onBack }) {
   const { sites, getSiteTotal } = useStore()
   const t = useLang()   // ← t is available here in the main component
 
@@ -24,10 +24,17 @@ export default function SitePickerScreen({ onNavigate }) {
     <div className="screen">
       {/* Header */}
       <div className="t-header" style={{ borderBottom: '1px solid var(--border)' }}>
-        <h1 className="t-heading">{t.dailyLedger}</h1>
-        <p className="t-caption" style={{ marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
-          {t.selectSite}
-        </p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <button onClick={onBack} className="btn-back">
+            <ArrowLeft size={19} />
+          </button>
+          <div>
+            <h1 className="t-heading">{t.dailyLedger}</h1>
+            <p className="t-caption" style={{ marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+              {t.selectSite}
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="screen-body" style={{ padding: '24px 20px 100px' }}>

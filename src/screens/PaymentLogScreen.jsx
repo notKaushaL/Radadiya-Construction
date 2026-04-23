@@ -3,7 +3,7 @@ import { ArrowLeft, Save, CreditCard, Banknote, Smartphone } from 'lucide-react'
 import useStore from '../store/useStore'
 import { useLang } from '../App'
 
-export default function PaymentLogScreen({ onNavigate, siteId }) {
+export default function PaymentLogScreen({ onNavigate, onBack, siteId }) {
   const { sites, addPayment } = useStore()
   const site = sites.find(s => s.id === siteId)
   const t = useLang()
@@ -17,7 +17,7 @@ export default function PaymentLogScreen({ onNavigate, siteId }) {
     return (
       <div className="screen">
         <div className="t-header">
-          <button onClick={() => onNavigate('home')} className="btn-back"><ArrowLeft size={19} /></button>
+          <button onClick={onBack} className="btn-back"><ArrowLeft size={19} /></button>
         </div>
       </div>
     )
@@ -39,7 +39,7 @@ export default function PaymentLogScreen({ onNavigate, siteId }) {
     <div className="screen">
       <div className="t-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <button onClick={() => onNavigate('siteSummary', { siteId })} className="btn-back">
+          <button onClick={onBack} className="btn-back">
             <ArrowLeft size={19} />
           </button>
           <div style={{ flex: 1, minWidth: 0 }}>

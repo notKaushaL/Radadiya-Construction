@@ -19,21 +19,25 @@ export const useLang = () => useContext(LangContext)
 const NAV_SCREENS = ['home', 'ledger', 'summary', 'settings']
 
 export default function App() {
-  // ── Single navigation state to prevent race conditions ──────────────────────
-  // Previously screen+params were two separate useState calls. When navigate()
-  // called setScreen + setParams, there was a render between the two sets where
-  // params.siteId was still stale/undefined. LedgerScreen's guard then called
-  // onNavigate('home') and we got a white flash. Now they always update atomically.
-  const [nav, setNav] = useState({ screen: 'home', params: {} })
+  // ── Navigation Stack ──────────────────────────────────────────────────────
+  // Each entry: { screen: string, params: object }
+  //
+  // navigate(to, params) → push a new screen (forward navigation)
+  // switchTab(tab)       → reset stack to fresh [tab] (bottom-nav tap)
+  // goBack()             → pop one level; if already at root → exit dialog
+  //
+  // This means the back button always returns to where you *came from*,
+  // with no hardcoded destinations and no risk of navigation loops.
+  const [navStack, setNavStack] = useState([{ screen: 'home', params: {} }])
+  const navStackRef = useRef(navStack)
+  useEffect(() => { navStackRef.current = navStack }, [navStack])
+
+  const { screen, params } = navStack[navStack.length - 1]
 
   const [showExitAlert, setShowExitAlert] = useState(false)
-  const [isShutdown, setIsShutdown] = useState(false)
-  const [isLanding, setIsLanding] = useState(true)
+  const [isShutdown, setIsShutdown]       = useState(false)
+  const [isLanding, setIsLanding]         = useState(true)
   const { theme, language, loadFromCloud } = useStore()
-
-  const { screen, params } = nav
-  const navRef = useRef(nav)
-  useEffect(() => { navRef.current = nav }, [nav])
 
   // Initialize DB + cloud sync on mount
   useEffect(() => {
@@ -48,41 +52,58 @@ export default function App() {
     startup()
   }, [])
 
-  // Apply theme attribute
+  // Apply theme
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
   }, [theme])
 
-  // Back button / history handling
+  // ── Forward navigation: push onto the stack ──────────────────────────────
+  const navigate = (to, p = {}) => {
+    setNavStack(prev => [...prev, { screen: to, params: p }])
+    setShowExitAlert(false)
+    window.history.pushState({ depth: navStackRef.current.length }, '')
+  }
+
+  // ── Tab switch: reset stack with home as base ─────────────────────────────
+  // Home tab → [home]  (back = exit dialog)
+  // Other tabs → [home, tab]  (back from tab goes to home, not exit)
+  const switchTab = (tab) => {
+    setNavStack(
+      tab === 'home'
+        ? [{ screen: 'home', params: {} }]
+        : [{ screen: 'home', params: {} }, { screen: tab, params: {} }]
+    )
+    setShowExitAlert(false)
+    window.history.pushState({ depth: 0 }, '')
+  }
+
+  // ── Go back: pop one level ───────────────────────────────────────────────
+  const goBack = () => {
+    const stack = navStackRef.current
+    if (stack.length <= 1) {
+      setShowExitAlert(true)
+      return
+    }
+    setNavStack(prev => prev.slice(0, -1))
+    setShowExitAlert(false)
+  }
+
+  // ── Browser back button: mirrors goBack() ───────────────────────────────
   useEffect(() => {
-    const handlePopState = (e) => {
+    const handlePopState = () => {
       if (isShutdown || isLanding) return
-      const state = e.state
-      if (!state || state.type === 'RADADIYA_SENTINEL') {
-        if (navRef.current.screen === 'home') {
-          setShowExitAlert(true)
-          window.history.pushState({ screen: 'home', params: {} }, '')
-        } else {
-          setNav({ screen: 'home', params: {} })
-          window.history.pushState({ screen: 'home', params: {} }, '')
-        }
-      } else if (state.screen) {
-        setNav({ screen: state.screen, params: state.params || {} })
-        setShowExitAlert(false)
+      const stack = navStackRef.current
+      if (stack.length <= 1) {
+        setShowExitAlert(true)
+        window.history.pushState({ depth: 0 }, '')
+      } else {
+        setNavStack(prev => prev.slice(0, -1))
       }
     }
-    window.history.pushState({ type: 'RADADIYA_SENTINEL' }, '')
-    window.history.pushState({ screen: 'home', params: {} }, '')
+    window.history.pushState({ depth: 0 }, '')
     window.addEventListener('popstate', handlePopState)
     return () => window.removeEventListener('popstate', handlePopState)
   }, [isShutdown, isLanding])
-
-  // Atomic navigate — screen + params always change together in one render
-  const navigate = (to, p = {}) => {
-    setNav({ screen: to, params: p })
-    setShowExitAlert(false)
-    window.history.pushState({ screen: to, params: p }, '')
-  }
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLanding(false), 2600)
@@ -90,24 +111,29 @@ export default function App() {
   }, [])
 
   if (isShutdown) return <ShutdownScreen />
-  if (isLanding) return <LandingScreen />
+  if (isLanding)  return <LandingScreen />
 
   const lang = TRANSLATIONS[language] || TRANSLATIONS.en
+
+  // Which bottom-nav tab to highlight (walk back through stack to find it)
+  const activeTab =
+    NAV_SCREENS.includes(screen)
+      ? screen
+      : [...navStack].reverse().find(e => NAV_SCREENS.includes(e.screen))?.screen || 'home'
 
   return (
     <LangContext.Provider value={lang}>
       <div className="screen">
-        {screen === 'home'        && <HomeScreen onNavigate={navigate} />}
-        {/* If ledger is opened without a siteId (e.g. tapped from nav), show the site picker */}
-        {screen === 'ledger' && !params.siteId && <SitePickerScreen onNavigate={navigate} />}
-        {screen === 'ledger' &&  params.siteId && <LedgerScreen onNavigate={navigate} siteId={params.siteId} />}
-        {screen === 'addEntry'    && <AddEntryScreen onNavigate={navigate} siteId={params.siteId} entryToEdit={params.entryToEdit} />}
-        {screen === 'summary'     && <SummaryScreen onNavigate={navigate} />}
-        {screen === 'settings'    && <SettingsScreen onNavigate={navigate} />}
-        {screen === 'paymentLog'  && <PaymentLogScreen onNavigate={navigate} siteId={params.siteId} />}
-        {screen === 'siteSummary' && <SiteSummaryScreen onNavigate={navigate} siteId={params.siteId} />}
+        {screen === 'home'        && <HomeScreen       onNavigate={navigate} onBack={goBack} />}
+        {screen === 'ledger' && !params.siteId && <SitePickerScreen onNavigate={navigate} onBack={goBack} />}
+        {screen === 'ledger' &&  params.siteId && <LedgerScreen     onNavigate={navigate} onBack={goBack} siteId={params.siteId} />}
+        {screen === 'addEntry'    && <AddEntryScreen    onNavigate={navigate} onBack={goBack} siteId={params.siteId} entryToEdit={params.entryToEdit} />}
+        {screen === 'summary'     && <SummaryScreen     onNavigate={navigate} onBack={goBack} />}
+        {screen === 'settings'    && <SettingsScreen    onNavigate={navigate} onBack={goBack} />}
+        {screen === 'paymentLog'  && <PaymentLogScreen  onNavigate={navigate} onBack={goBack} siteId={params.siteId} />}
+        {screen === 'siteSummary' && <SiteSummaryScreen onNavigate={navigate} onBack={goBack} siteId={params.siteId} />}
 
-        {NAV_SCREENS.includes(screen) && <BottomNav active={screen} onNavigate={navigate} />}
+        <BottomNav active={activeTab} onNavigate={switchTab} />
 
         {showExitAlert && (
           <div style={{
@@ -127,9 +153,9 @@ export default function App() {
               }}>
                 <Power size={20} color="var(--text)" />
               </div>
-              <h2 style={{ fontSize: 19, fontWeight: 700, color: 'var(--text)', margin: '0 0 8px' }}>Close Application?</h2>
-              <p style={{ fontSize: 13, color: 'var(--text2)', margin: '0 0 24px', lineHeight: 1.5 }}>
-                Are you sure you want to exit?
+              <h2 style={{ fontSize: 19, fontWeight: 700, color: 'var(--text)', margin: '0 0 8px' }}>Exit App?</h2>
+              <p style={{ fontSize: 13, color: 'var(--text2)', margin: '0 0 24px', lineHeight: 1.6 }}>
+                All your data is saved and synced. You can reopen the app anytime from your home screen.
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <button onClick={() => setIsShutdown(true)} className="btn-fab-full">Yes, Close</button>
@@ -154,7 +180,6 @@ function LandingScreen() {
       position: 'fixed', inset: 0, zIndex: 500, background: '#FFFFFF',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 32
     }}>
-      {/* Ring + Logo */}
       <div style={{ position: 'relative', width: 152, height: 152, marginBottom: 30 }}>
         <svg
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', transform: 'rotate(-90deg)' }}
@@ -171,28 +196,18 @@ function LandingScreen() {
               </feMerge>
             </filter>
           </defs>
-
-          {/* Faint background track */}
           <circle cx="50" cy="50" r="44" fill="none" stroke="#EBEBEB" strokeWidth="1.5" />
-
-          {/* Golden bloom shadow behind main stroke */}
           <circle cx="50" cy="50" r="44" fill="none"
             stroke="rgba(196, 148, 28, 0.28)" strokeWidth="12"
-            strokeLinecap="round"
-            className="animate-trace-glow"
+            strokeLinecap="round" className="animate-trace-glow"
             style={{ filter: 'blur(6px)' }}
           />
-
-          {/* Main anti-clockwise stroke — golden */}
           <circle cx="50" cy="50" r="44" fill="none"
             stroke="#C4922A" strokeWidth="4.2"
-            strokeLinecap="round"
-            className="animate-trace"
+            strokeLinecap="round" className="animate-trace"
             filter="url(#strokeGlow)"
           />
         </svg>
-
-        {/* Logo — always visible, no animation */}
         <div style={{
           position: 'absolute', inset: 11,
           borderRadius: '50%', overflow: 'hidden', background: '#fff',
@@ -203,8 +218,6 @@ function LandingScreen() {
           />
         </div>
       </div>
-
-      {/* Text — visible from start; title pulses when circle finishes */}
       <div style={{ textAlign: 'center', userSelect: 'none' }}>
         <h1 className="animate-title-glow" style={{
           fontSize: 20, fontWeight: 800, color: '#111111',
@@ -222,7 +235,6 @@ function LandingScreen() {
     </div>
   )
 }
-
 
 function ShutdownScreen() {
   return (

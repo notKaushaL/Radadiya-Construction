@@ -1,9 +1,9 @@
-import { ArrowLeft, TrendingUp, Trash2, Calendar, FileText, Wallet } from 'lucide-react'
+import { ArrowLeft, TrendingUp, Trash2, Calendar, FileText, Wallet, ArrowDownCircle } from 'lucide-react'
 import useStore from '../store/useStore'
 import { formatINR } from '../utils/helpers'
 import { useLang } from '../App'
 
-export default function SiteSummaryScreen({ onNavigate, siteId }) {
+export default function SiteSummaryScreen({ onNavigate, onBack, siteId }) {
   const { sites, getSiteTotal, getSitePaymentsTotal, getSitePayments, deletePayment } = useStore()
   const t = useLang()
 
@@ -12,7 +12,7 @@ export default function SiteSummaryScreen({ onNavigate, siteId }) {
     return (
       <div className="screen">
         <div className="t-header">
-          <button onClick={() => onNavigate('home')} className="btn-back"><ArrowLeft size={19} /></button>
+          <button onClick={onBack} className="btn-back"><ArrowLeft size={19} /></button>
         </div>
       </div>
     )
@@ -27,7 +27,7 @@ export default function SiteSummaryScreen({ onNavigate, siteId }) {
     <div className="screen">
       <div className="t-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <button onClick={() => onNavigate('home')} className="btn-back">
+          <button onClick={onBack} className="btn-back">
             <ArrowLeft size={19} />
           </button>
           <div style={{ flex: 1, minWidth: 0 }}>

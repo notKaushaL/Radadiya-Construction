@@ -5,7 +5,7 @@ import { formatINR } from '../utils/helpers'
 import { useLang } from '../App'
 import { LANG_NAMES } from '../i18n/translations'
 
-export default function SettingsScreen({ onNavigate }) {
+export default function SettingsScreen({ onNavigate, onBack }) {
   const {
     sites, clearAllData, deleteSite, exportData, generateWhatsAppSummary,
     getGrandTotal, getSiteTotal, theme, setTheme, language, setLanguage,
@@ -64,7 +64,7 @@ export default function SettingsScreen({ onNavigate }) {
     <div className="screen">
       <div className="t-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <button onClick={() => onNavigate('home')} className="btn-back">
+          <button onClick={onBack} className="btn-back">
             <ArrowLeft size={19} />
           </button>
           <div>
@@ -99,13 +99,13 @@ export default function SettingsScreen({ onNavigate }) {
 
           {/* Stats */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-            <div style={{ padding: '18px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 14 }}>
+            <div style={{ padding: '18px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 14, minWidth: 0, overflow: 'hidden' }}>
               <p className="t-caption" style={{ marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{lang.totalSites}</p>
               <p style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', margin: 0 }}>{sites.length}</p>
             </div>
-            <div style={{ padding: '18px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 14 }}>
+            <div style={{ padding: '18px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 14, minWidth: 0, overflow: 'hidden' }}>
               <p className="t-caption" style={{ marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{lang.totalValue}</p>
-              <p style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', margin: 0 }}>{formatINR(grandTotal)}</p>
+              <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', margin: 0, overflowWrap: 'anywhere', wordBreak: 'break-all', lineHeight: 1.35 }}>{formatINR(grandTotal)}</p>
             </div>
           </div>
 

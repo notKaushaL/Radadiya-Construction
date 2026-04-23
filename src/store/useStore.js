@@ -173,6 +173,26 @@ const useStore = create(
         }
       },
 
+      // Update name, client, phone, address together
+      updateSiteDetails: async (siteId, { name, ownerName, ownerPhone, address }) => {
+        if (!name?.trim()) return
+        set((state) => ({
+          sites: state.sites.map(s =>
+            s.id === siteId
+              ? { ...s, name: name.trim(), ownerName: ownerName?.trim() || '', ownerPhone: ownerPhone?.trim() || '', address: address?.trim() || '' }
+              : s
+          )
+        }))
+        try {
+          await client.execute({
+            sql: "UPDATE sites SET name = ?, ownerName = ?, ownerPhone = ?, address = ? WHERE id = ?",
+            args: [name.trim(), ownerName?.trim() || '', ownerPhone?.trim() || '', address?.trim() || '', siteId]
+          })
+        } catch (error) {
+          console.error('Sync updateSiteDetails failed:', error)
+        }
+      },
+
       deleteSite: async (siteId) => {
         set((state) => ({
           sites:    state.sites.filter(s    => s.id     !== siteId),

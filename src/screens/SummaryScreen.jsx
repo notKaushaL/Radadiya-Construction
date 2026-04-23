@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { PieChart, TrendingUp, ChevronDown, Check, X, Building2 } from 'lucide-react'
+import { PieChart, TrendingUp, ChevronDown, Check, X, Building2, ArrowLeft } from 'lucide-react'
 import useStore from '../store/useStore'
 import { formatINR } from '../utils/helpers'
 import { useLang } from '../App'
 
-export default function SummaryScreen({ onNavigate }) {
+export default function SummaryScreen({ onNavigate, onBack }) {
   const { sites, entries, getSiteTotal } = useStore()
   const [selectedSiteId, setSelectedSiteId] = useState('all')
   const [showPicker, setShowPicker] = useState(false)
@@ -34,14 +34,18 @@ export default function SummaryScreen({ onNavigate }) {
     <div className="screen">
       {/* Header */}
       <div className="t-header">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-          <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
+          <button onClick={onBack} className="btn-back">
+            <ArrowLeft size={19} />
+          </button>
+          <div style={{ flex: 1 }}>
             <h1 className="t-heading">{t.summaryTitle}</h1>
             <p className="t-caption" style={{ marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.12em' }}>{t.projectAnalytics}</p>
           </div>
           <div style={{
             width: 44, height: 44, borderRadius: '50%', background: 'var(--bg2)',
-            border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center'
+            border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0
           }}>
             <PieChart size={19} color="var(--text)" />
           </div>
@@ -85,7 +89,7 @@ export default function SummaryScreen({ onNavigate }) {
           <p style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', opacity: 0.5, margin: '0 0 6px' }}>
             {t.cumulativeExpense}
           </p>
-          <h2 style={{ fontSize: 36, fontWeight: 800, letterSpacing: '-0.03em', margin: '0 0 8px' }}>
+          <h2 style={{ fontSize: 34, fontWeight: 800, letterSpacing: '-0.03em', margin: '0 0 8px', overflowWrap: 'anywhere', wordBreak: 'break-all', lineHeight: 1.2 }}>
             {formatINR(currentTotal)}
           </h2>
           <p style={{ fontSize: 12, opacity: 0.4, margin: 0, fontWeight: 600 }}>
@@ -155,7 +159,7 @@ export default function SummaryScreen({ onNavigate }) {
                     <div style={{ flex: 1, marginRight: 12 }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
                         <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 180 }}>{site.name}</p>
-                        <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', margin: 0 }}>{formatINR(siteTotal)}</p>
+                        <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', margin: 0, overflowWrap: 'anywhere', wordBreak: 'break-all', lineHeight: 1.3, textAlign: 'right', minWidth: 0, maxWidth: 110 }}>{formatINR(siteTotal)}</p>
                       </div>
                       <div style={{ height: 4, background: 'var(--border)', borderRadius: 9999, overflow: 'hidden' }}>
                         <div style={{ height: '100%', width: `${barW}%`, background: 'var(--text)', borderRadius: 9999, opacity: 0.5 }} />

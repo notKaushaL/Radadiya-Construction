@@ -19,7 +19,7 @@ const MATERIAL_PRESETS = [
 const LABOR_CATS = ['majur','karigar','mason','plumber','electrician','carpenter','painter','welder','salaat','helper']
 const MISC_CATS  = ['food','rent','transport','tools','others']
 
-export default function AddEntryScreen({ onNavigate, siteId, entryToEdit }) {
+export default function AddEntryScreen({ onNavigate, onBack, siteId, entryToEdit }) {
   const { sites, addEntry, updateEntry, language } = useStore()
   const site = sites.find((s) => s.id === siteId)
   const isEditing = !!entryToEdit
@@ -51,7 +51,7 @@ export default function AddEntryScreen({ onNavigate, siteId, entryToEdit }) {
     return (
       <div className="screen">
         <div className="t-header">
-          <button onClick={() => onNavigate('home')} className="btn-back"><ArrowLeft size={19} /></button>
+          <button onClick={onBack} className="btn-back"><ArrowLeft size={19} /></button>
         </div>
       </div>
     )
@@ -121,7 +121,7 @@ export default function AddEntryScreen({ onNavigate, siteId, entryToEdit }) {
       {/* Header */}
       <div className="t-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
-          <button onClick={() => onNavigate('ledger', { siteId })} className="btn-back">
+          <button onClick={onBack} className="btn-back">
             <ArrowLeft size={19} />
           </button>
           <div style={{ flex: 1, minWidth: 0 }}>

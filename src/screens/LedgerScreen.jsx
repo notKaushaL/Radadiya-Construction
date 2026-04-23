@@ -1,18 +1,21 @@
 import { useState } from 'react'
-import { ArrowLeft, Plus, Share2, MoreVertical, Trash2, CheckCircle2, Calendar, AlertCircle, Edit2, RotateCcw, Building2 } from 'lucide-react'
+import { ArrowLeft, Plus, Share2, MoreVertical, Trash2, CheckCircle2, Calendar, AlertCircle, Edit2, RotateCcw, Building2, User, Phone } from 'lucide-react'
 import useStore from '../store/useStore'
 import { formatINR } from '../utils/helpers'
 import { useLang } from '../App'
 
-export default function LedgerScreen({ onNavigate, siteId }) {
+export default function LedgerScreen({ onNavigate, onBack, siteId }) {
   const {
-    sites, deleteEntry, setSiteStatus, getSiteEntriesByDate, updateSiteName,
+    sites, deleteEntry, setSiteStatus, getSiteEntriesByDate, updateSiteDetails,
     getSiteTotal, getSitePaymentsTotal
   } = useStore()
 
   const [showOptions, setShowOptions] = useState(false)
-  const [showEditName, setShowEditName] = useState(false)
-  const [newName, setNewName] = useState('')
+  const [showEdit, setShowEdit] = useState(false)
+  const [editName, setEditName]     = useState('')
+  const [editOwner, setEditOwner]   = useState('')
+  const [editPhone, setEditPhone]   = useState('')
+  const [editAddr, setEditAddr]     = useState('')
   const t = useLang()
 
   const site = sites.find((s) => s.id === siteId)
@@ -25,7 +28,7 @@ export default function LedgerScreen({ onNavigate, siteId }) {
     return (
       <div className="screen">
         <div className="t-header">
-          <button onClick={() => onNavigate('home')} className="btn-back">
+          <button onClick={onBack} className="btn-back">
             <ArrowLeft size={19} />
           </button>
         </div>
@@ -51,45 +54,87 @@ export default function LedgerScreen({ onNavigate, siteId }) {
   return (
     <div className="screen">
       {/* Header */}
-      <div className="t-header">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 0 }}>
-            <button onClick={() => onNavigate('home')} className="btn-back">
+      <div className="t-header" style={{ paddingBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
+            <button onClick={onBack} className="btn-back" style={{ flexShrink: 0 }}>
               <ArrowLeft size={19} />
             </button>
-            <div style={{ flex: 1, minWidth: 0 }}
-              onClick={() => { setNewName(site.name); setShowEditName(true) }}
+            
+            <h1 className="t-heading" style={{ fontSize: 18, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0 }}>
+              {site.name}
+            </h1>
+
+            <button
+              onClick={() => { setEditName(site.name); setEditOwner(site.ownerName || ''); setEditPhone(site.ownerPhone || ''); setEditAddr(site.address || ''); setShowEdit(true) }}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28,
+                borderRadius: '50%', background: 'var(--bg2)', border: '1px solid var(--border)',
+                cursor: 'pointer', flexShrink: 0
+              }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <h1 className="t-heading" style={{ fontSize: 19, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {site.name}
-                </h1>
-                <Edit2 size={11} color="var(--text3)" />
-              </div>
-              <p className="t-caption" style={{ marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
-                {isCompleted ? t.projectDone : t.dailyLedger}
-              </p>
-            </div>
+              <Edit2 size={11} color="var(--text3)" />
+            </button>
           </div>
-          <button
-            onClick={() => setShowOptions(true)}
-            className="btn-back"
-          >
-            <MoreVertical size={19} />
-          </button>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+            <button onClick={handleShare} className="btn-back" style={{ width: 34, height: 34 }}>
+              <Share2 size={16} />
+            </button>
+            <button onClick={() => setShowOptions(true)} className="btn-back" style={{ width: 34, height: 34 }}>
+              <MoreVertical size={17} />
+            </button>
+          </div>
+        </div>
+
+        {/* Client Info Section + Status Badge */}
+        <div style={{ marginTop: 6, paddingLeft: 50, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 8 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {site.ownerName && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <User size={11} color="var(--text3)" />
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text2)' }}>{site.ownerName}</span>
+              </div>
+            )}
+            {site.ownerPhone && (
+              <a
+                href={`tel:${site.ownerPhone}`}
+                style={{ display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
+              >
+                <Phone size={11} color="var(--text3)" />
+                <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)' }}>
+                  {site.ownerPhone}
+                </span>
+              </a>
+            )}
+          </div>
+
+          {/* Status Badge - In line with phone row */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 4, padding: '1.5px 6px', borderRadius: 4,
+            background: isCompleted ? 'var(--bg2)' : 'rgba(34, 197, 94, 0.1)',
+            border: `1px solid ${isCompleted ? 'var(--border)' : 'rgba(34, 197, 94, 0.2)'}`,
+            flexShrink: 0,
+            marginBottom: 2
+          }}>
+            <div style={{ width: 4, height: 4, borderRadius: '50%', background: isCompleted ? 'var(--text3)' : '#22c55e' }} />
+            <span style={{ fontSize: 8, fontWeight: 800, color: isCompleted ? 'var(--text3)' : '#16a34a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              {isCompleted ? 'Completed' : 'Active'}
+            </span>
+          </div>
         </div>
       </div>
 
       <div className="screen-body" style={{ padding: '20px 20px 140px' }}>
         {/* Stats Row */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 24 }}>
-          <div style={{ padding: '14px 16px', background: 'var(--bg2)', borderRadius: 14, border: '1px solid var(--border)' }}>
+          <div style={{ padding: '14px 16px', background: 'var(--bg2)', borderRadius: 14, border: '1px solid var(--border)', minWidth: 0, overflow: 'hidden' }}>
             <p className="t-caption" style={{ marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t.totalSpent}</p>
-            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', margin: 0 }}>{formatINR(total)}</p>
+            <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', margin: 0, overflowWrap: 'anywhere', wordBreak: 'break-all', lineHeight: 1.35 }}>{formatINR(total)}</p>
           </div>
-          <div style={{ padding: '14px 16px', background: 'var(--bg2)', borderRadius: 14, border: '1px solid var(--border)' }}>
+          <div style={{ padding: '14px 16px', background: 'var(--bg2)', borderRadius: 14, border: '1px solid var(--border)', minWidth: 0, overflow: 'hidden' }}>
             <p className="t-caption" style={{ marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t.fundsReceived}</p>
-            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', margin: 0 }}>{formatINR(paid)}</p>
+            <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', margin: 0, overflowWrap: 'anywhere', wordBreak: 'break-all', lineHeight: 1.35 }}>{formatINR(paid)}</p>
           </div>
         </div>
 
@@ -157,16 +202,9 @@ export default function LedgerScreen({ onNavigate, siteId }) {
           padding: '0 20px', pointerEvents: 'none'
         }}>
           <button
-            onClick={handleShare}
-            className="btn-fab"
-            style={{ width: 56, height: 56, padding: 0, pointerEvents: 'auto' }}
-          >
-            <Share2 size={20} />
-          </button>
-          <button
             onClick={() => onNavigate('addEntry', { siteId })}
             className="btn-fab"
-            style={{ pointerEvents: 'auto' }}
+            style={{ pointerEvents: 'auto', flex: 1, maxWidth: 300 }}
           >
             <Plus size={18} strokeWidth={3} />
             {t.addEntry}
@@ -213,25 +251,52 @@ export default function LedgerScreen({ onNavigate, siteId }) {
         </div>
       )}
 
-      {/* Edit Name Sheet */}
-      {showEditName && (
-        <div className="t-overlay" onClick={() => setShowEditName(false)}>
+      {/* Edit Site Details Sheet */}
+      {showEdit && (
+        <div className="t-overlay" onClick={() => setShowEdit(false)}>
           <div className="t-modal animate-slide-up" onClick={e => e.stopPropagation()}>
-            <div style={{ width: 40, height: 4, borderRadius: 4, background: 'var(--border)', margin: '0 auto 24px' }} />
-            <h2 className="t-heading" style={{ marginBottom: 20, fontSize: 20 }}>{t.editSiteName}</h2>
-            <input
-              type="text"
-              value={newName}
-              onChange={e => setNewName(e.target.value)}
-              className="t-input"
-              autoFocus
-              style={{ marginBottom: 24 }}
-            />
+            <div style={{ width: 40, height: 4, borderRadius: 4, background: 'var(--border)', margin: '0 auto 20px' }} />
+            <h2 className="t-heading" style={{ marginBottom: 4, fontSize: 20 }}>Edit Site Details</h2>
+            <p className="t-caption" style={{ marginBottom: 20 }}>Update name, client & contact info</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
+              <div>
+                <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 6px' }}>Site Name *</p>
+                <input type="text" value={editName} onChange={e => setEditName(e.target.value)} className="t-input" placeholder="e.g. Madhukanj Villa" autoFocus />
+              </div>
+              <div>
+                <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 6px' }}>Client Name</p>
+                <input type="text" value={editOwner} onChange={e => setEditOwner(e.target.value)} className="t-input" placeholder="e.g. Ramesh Patel" />
+              </div>
+              <div>
+                <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 6px' }}>Phone Number</p>
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={10}
+                  value={editPhone}
+                  onChange={e => setEditPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                  className="t-input"
+                  placeholder="e.g. 9876543210"
+                />
+              </div>
+              <div>
+                <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 6px' }}>Address</p>
+                <input type="text" value={editAddr} onChange={e => setEditAddr(e.target.value)} className="t-input" placeholder="e.g. Alkapuri, Vadodara" />
+              </div>
+            </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <button onClick={() => { updateSiteName(siteId, newName); setShowEditName(false) }} className="btn-fab-full">
-                {t.save}
+              <button
+                onClick={() => {
+                  updateSiteDetails(siteId, { name: editName, ownerName: editOwner, ownerPhone: editPhone, address: editAddr })
+                  setShowEdit(false)
+                }}
+                className="btn-fab-full"
+                disabled={!editName.trim()}
+              >
+                Save Changes
               </button>
-              <button onClick={() => setShowEditName(false)} style={{ height: 48, color: 'var(--text3)', fontWeight: 700, fontSize: 14, background: 'none', border: 'none', cursor: 'pointer' }}>
+              <button onClick={() => setShowEdit(false)} style={{ height: 48, color: 'var(--text3)', fontWeight: 700, fontSize: 14, background: 'none', border: 'none', cursor: 'pointer' }}>
                 {t.cancel}
               </button>
             </div>
