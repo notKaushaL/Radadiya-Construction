@@ -12,7 +12,7 @@ export default defineConfig({
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
         name: 'Radadiya Construction',
-        short_name: 'Radadiya',
+        short_name: 'Radadiya Construction',
         description: 'Premium Construction Expense Tracker',
         display: 'standalone',
         orientation: 'portrait',
