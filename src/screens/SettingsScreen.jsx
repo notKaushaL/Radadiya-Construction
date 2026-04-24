@@ -206,53 +206,99 @@ export default function SettingsScreen({ onNavigate, onBack }) {
           {sites.length > 0 && (
             <div>
               <p className="t-section-label">Project Administration</p>
-              <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 14, overflow: 'hidden' }}>
-                {sites.map((site, i) => (
-                  <div key={site.id} style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    padding: '14px 16px',
-                    borderTop: i > 0 ? '1px solid var(--border)' : 'none'
-                  }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-                        <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {site.name}
-                        </p>
-                        {site.status === 'completed' && (
-                          <span style={{ fontSize: 9, fontWeight: 800, color: 'var(--text3)', textTransform: 'uppercase', padding: '2px 6px', background: 'var(--bg)', borderRadius: 4, border: '1px solid var(--border)' }}>
-                            Completed
-                          </span>
-                        )}
+              
+              {sites.filter(s => s.status !== 'completed').length > 0 && (
+                <div style={{ marginBottom: sites.filter(s => s.status === 'completed').length > 0 ? 24 : 0 }}>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8, marginLeft: 4 }}>Active Sites</p>
+                  <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 14, overflow: 'hidden' }}>
+                    {sites.filter(s => s.status !== 'completed').sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)).map((site, i) => (
+                      <div key={site.id} style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        padding: '14px 16px',
+                        borderTop: i > 0 ? '1px solid var(--border)' : 'none',
+                      }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {site.name}
+                          </p>
+                          <p style={{ fontSize: 12, color: 'var(--text3)', margin: '2px 0 0', fontWeight: 500 }}>
+                            {formatINR(getSiteTotal(site.id))}
+                          </p>
+                        </div>
+                        <div style={{ display: 'flex', gap: 8, marginLeft: 10 }}>
+                          <button
+                            onClick={() => onNavigate('ledger', { siteId: site.id })}
+                            style={{
+                              height: 34, padding: '0 14px', borderRadius: 9999,
+                              background: 'var(--btn-bg)', color: 'var(--btn-text)',
+                              fontSize: 12, fontWeight: 700, border: 'none', cursor: 'pointer'
+                            }}
+                          >
+                            {lang.open}
+                          </button>
+                          <button
+                            onClick={() => setDeleteSiteId(site.id)}
+                            style={{
+                              width: 34, height: 34, borderRadius: '50%',
+                              background: 'var(--bg)', border: '1px solid var(--border)',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+                            }}
+                          >
+                            <Trash2 size={14} color="var(--text3)" />
+                          </button>
+                        </div>
                       </div>
-                      <p style={{ fontSize: 12, color: 'var(--text3)', margin: 0, fontWeight: 500 }}>
-                        {formatINR(getSiteTotal(site.id))}
-                      </p>
-                    </div>
-                    <div style={{ display: 'flex', gap: 8, marginLeft: 10 }}>
-                      <button
-                        onClick={() => onNavigate('ledger', { siteId: site.id })}
-                        style={{
-                          height: 34, padding: '0 14px', borderRadius: 9999,
-                          background: 'var(--btn-bg)', color: 'var(--btn-text)',
-                          fontSize: 12, fontWeight: 700, border: 'none', cursor: 'pointer'
-                        }}
-                      >
-                        {lang.open}
-                      </button>
-                      <button
-                        onClick={() => setDeleteSiteId(site.id)}
-                        style={{
-                          width: 34, height: 34, borderRadius: '50%',
-                          background: 'var(--bg)', border: '1px solid var(--border)',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
-                        }}
-                      >
-                        <Trash2 size={14} color="var(--text3)" />
-                      </button>
-                    </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
+              )}
+
+              {sites.filter(s => s.status === 'completed').length > 0 && (
+                <div>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8, marginLeft: 4 }}>Completed Sites</p>
+                  <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 14, overflow: 'hidden' }}>
+                    {sites.filter(s => s.status === 'completed').sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)).map((site, i) => (
+                      <div key={site.id} style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        padding: '14px 16px',
+                        borderTop: i > 0 ? '1px solid var(--border)' : 'none',
+                        background: 'rgba(34, 197, 94, 0.08)'
+                      }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {site.name}
+                          </p>
+                          <p style={{ fontSize: 12, color: 'var(--text3)', margin: '2px 0 0', fontWeight: 500 }}>
+                            {formatINR(getSiteTotal(site.id))}
+                          </p>
+                        </div>
+                        <div style={{ display: 'flex', gap: 8, marginLeft: 10 }}>
+                          <button
+                            onClick={() => onNavigate('ledger', { siteId: site.id })}
+                            style={{
+                              height: 34, padding: '0 14px', borderRadius: 9999,
+                              background: 'var(--btn-bg)', color: 'var(--btn-text)',
+                              fontSize: 12, fontWeight: 700, border: 'none', cursor: 'pointer'
+                            }}
+                          >
+                            {lang.open}
+                          </button>
+                          <button
+                            onClick={() => setDeleteSiteId(site.id)}
+                            style={{
+                              width: 34, height: 34, borderRadius: '50%',
+                              background: 'var(--bg)', border: '1px solid var(--border)',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+                            }}
+                          >
+                            <Trash2 size={14} color="var(--text3)" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

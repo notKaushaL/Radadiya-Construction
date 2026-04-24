@@ -14,8 +14,6 @@ export default defineConfig({
         name: 'Radadiya Construction',
         short_name: 'Radadiya',
         description: 'Premium Construction Expense Tracker',
-        theme_color: '#FFFFFF',
-        background_color: '#FFFFFF',
         display: 'standalone',
         orientation: 'portrait',
         scope: '/',
