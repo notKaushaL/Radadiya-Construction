@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Download, Trash2, Share2, ChevronRight, Moon, Sun, ArrowLeft, SmartphoneIcon, ShieldAlert, Check, Cloud, Database, Edit2, User } from 'lucide-react'
+import { Download, Trash2, Share2, ChevronRight, Moon, Sun, ArrowLeft, SmartphoneIcon, ShieldAlert, Check, Cloud, Database, Edit2, User, Lock } from 'lucide-react'
 import useStore from '../store/useStore'
 import { formatINR } from '../utils/helpers'
 import { useLang } from '../App'
@@ -9,10 +9,15 @@ export default function SettingsScreen({ onNavigate, onBack }) {
   const {
     sites, clearAllData, deleteSite, exportData, generateWhatsAppSummary,
     getGrandTotal, getSiteTotal, theme, setTheme, language, setLanguage,
-    syncConfig, setSyncConfig, profile, setProfile
+    syncConfig, setSyncConfig, profile, setProfile, appLock, setAppLock
   } = useStore()
 
   const lang = useLang()
+  const [pinSetupModal, setPinSetupModal] = useState(false)
+  const [pinStep, setPinStep] = useState(1)
+  const [tempPin, setTempPin] = useState('')
+  const [confirmPin, setConfirmPin] = useState('')
+  const [tempBio, setTempBio] = useState(true)
   const [clearModal, setClearModal] = useState(false)
   const [deleteSiteId, setDeleteSiteId] = useState(null)
   const [shareModalOpen, setShareModalOpen] = useState(false)
@@ -199,6 +204,84 @@ export default function SettingsScreen({ onNavigate, onBack }) {
                   {name}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* App Security */}
+          <div>
+            <p className="t-section-label">App Security</p>
+            <div style={{
+              background: 'var(--bg2)', border: '1px solid var(--border)',
+              borderRadius: 14, overflow: 'hidden'
+            }}>
+              {/* Main App Lock Toggle */}
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <div style={{
+                    width: 38, height: 38, borderRadius: '50%', background: 'var(--bg)',
+                    border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}>
+                    <Lock size={17} color="var(--text)" />
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)', margin: 0 }}>
+                      App Lock
+                    </p>
+                    <p style={{ fontSize: 11, color: 'var(--text3)', margin: '2px 0 0' }}>
+                      {appLock?.enabled ? 'PIN enabled' : 'Disabled'}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    if (appLock?.enabled) {
+                      setAppLock({ enabled: false, pin: '', useBiometrics: false })
+                    } else {
+                      setPinSetupModal(true)
+                    }
+                  }}
+                  style={{
+                    width: 56, height: 30, borderRadius: 9999, padding: 3, cursor: 'pointer',
+                    background: appLock?.enabled ? 'var(--text)' : 'var(--border)', border: 'none',
+                    display: 'flex', alignItems: 'center',
+                    justifyContent: appLock?.enabled ? 'flex-end' : 'flex-start',
+                    transition: 'all 0.25s'
+                  }}
+                >
+                  <div style={{
+                    width: 24, height: 24, borderRadius: '50%',
+                    background: appLock?.enabled ? 'var(--bg)' : 'var(--bg)',
+                    boxShadow: '0 1px 4px rgba(0,0,0,0.3)'
+                  }} />
+                </button>
+              </div>
+
+              {/* Secondary Biometrics Toggle (Only visible if App Lock is ON) */}
+              {appLock?.enabled && (
+                <div style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '16px', borderTop: '1px solid var(--border)'
+                }}>
+                  <div>
+                    <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', margin: 0 }}>Fingerprint / Face ID</p>
+                    <p style={{ fontSize: 11, color: 'var(--text3)', margin: '2px 0 0' }}>Unlock faster with biometrics</p>
+                  </div>
+                  <button
+                    onClick={() => setAppLock({ useBiometrics: !appLock.useBiometrics })}
+                    style={{
+                      width: 50, height: 28, borderRadius: 9999, padding: 3, cursor: 'pointer',
+                      background: appLock?.useBiometrics ? 'var(--text)' : 'var(--border)', border: 'none',
+                      display: 'flex', alignItems: 'center',
+                      justifyContent: appLock?.useBiometrics ? 'flex-end' : 'flex-start',
+                      transition: 'all 0.25s'
+                    }}
+                  >
+                    <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--bg)', boxShadow: '0 1px 4px rgba(0,0,0,0.3)' }} />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
@@ -493,6 +576,111 @@ export default function SettingsScreen({ onNavigate, onBack }) {
               </button>
               <button onClick={() => setSyncModalOpen(false)} style={{ height: 48, color: 'var(--text3)', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer' }}>
                 {lang.cancel}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PIN SETUP MODAL */}
+      {pinSetupModal && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(0,0,0,0.4)',
+          backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'flex-end'
+        }}>
+          <div className="animate-slide-up" style={{
+            background: 'var(--bg)', width: '100%', borderTopLeftRadius: 24, borderTopRightRadius: 24,
+            padding: '24px 20px 40px', boxShadow: '0 -10px 40px rgba(0,0,0,0.1)'
+          }}>
+            <h3 style={{ fontSize: 19, fontWeight: 800, color: 'var(--text)', margin: '0 0 8px' }}>
+              {pinStep === 1 ? 'Set Up App Lock' : 'Confirm Your PIN'}
+            </h3>
+            <p style={{ fontSize: 13, color: 'var(--text3)', margin: '0 0 20px', lineHeight: 1.5 }}>
+              {pinStep === 1 ? 'Enter a 4-digit PIN to secure your app.' : 'Re-enter your 4-digit PIN to confirm.'}
+            </p>
+            
+            <input
+              type="number"
+              placeholder={pinStep === 1 ? "Enter 4-Digit PIN" : "Confirm 4-Digit PIN"}
+              value={pinStep === 1 ? tempPin : confirmPin}
+              onChange={e => {
+                if (pinStep === 1) setTempPin(e.target.value.slice(0, 4))
+                else setConfirmPin(e.target.value.slice(0, 4))
+              }}
+              className="t-input"
+              autoFocus
+              style={{ textAlign: 'center', fontSize: 24, letterSpacing: '0.2em', marginBottom: 24 }}
+            />
+
+            {pinStep === 1 && (
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '16px', background: 'var(--bg2)', border: '1px solid var(--border)',
+                borderRadius: 14, marginBottom: 24
+              }}>
+                <div>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', margin: 0 }}>Fingerprint / Face ID</p>
+                  <p style={{ fontSize: 11, color: 'var(--text3)', margin: '2px 0 0' }}>Unlock faster with biometrics</p>
+                </div>
+                <button
+                  onClick={() => setTempBio(!tempBio)}
+                  style={{
+                    width: 50, height: 28, borderRadius: 9999, padding: 3, cursor: 'pointer',
+                    background: tempBio ? 'var(--text)' : 'var(--border)', border: 'none',
+                    display: 'flex', alignItems: 'center',
+                    justifyContent: tempBio ? 'flex-end' : 'flex-start',
+                    transition: 'all 0.25s'
+                  }}
+                >
+                  <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--bg)', boxShadow: '0 1px 4px rgba(0,0,0,0.3)' }} />
+                </button>
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button
+                onClick={() => { 
+                  setPinSetupModal(false); 
+                  setTempPin(''); 
+                  setConfirmPin('');
+                  setPinStep(1);
+                  setTempBio(true); 
+                }}
+                style={{
+                  flex: 1, height: 48, borderRadius: 24, fontSize: 14, fontWeight: 700,
+                  color: 'var(--text)', background: 'var(--bg2)', border: '1px solid var(--border)', cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  if (pinStep === 1) {
+                    if (tempPin.length === 4) setPinStep(2)
+                  } else {
+                    if (confirmPin === tempPin) {
+                      setAppLock({ enabled: true, pin: tempPin, useBiometrics: tempBio })
+                      setPinSetupModal(false)
+                      setTempPin('')
+                      setConfirmPin('')
+                      setPinStep(1)
+                      setTempBio(true)
+                      setTimeout(() => window.location.reload(), 150)
+                    } else {
+                      alert("PINs do not match. Please try again.")
+                      setConfirmPin('')
+                    }
+                  }
+                }}
+                style={{
+                  flex: 1, height: 48, borderRadius: 24, fontSize: 14, fontWeight: 700,
+                  color: 'var(--bg)', background: 'var(--text)', border: 'none', cursor: 'pointer',
+                  opacity: (pinStep === 1 ? tempPin.length === 4 : confirmPin.length === 4) ? 1 : 0.5, 
+                  transition: 'opacity 0.2s'
+                }}
+                disabled={pinStep === 1 ? tempPin.length !== 4 : confirmPin.length !== 4}
+              >
+                {pinStep === 1 ? 'Next' : 'Save & Lock'}
               </button>
             </div>
           </div>

@@ -30,6 +30,9 @@ const useStore = create(
       profile: { name: 'Radadiya Construction', phone: '', address: 'VADODARA · INDIA' },
       
       setProfile: (profile) => set({ profile }),
+
+      appLock: { enabled: false, pin: '', useBiometrics: false, credentialId: null },
+      setAppLock: (config) => set(state => ({ appLock: { ...state.appLock, ...config } })),
       
       syncConfig: { url: '', token: '' },
       setSyncConfig: async (url, token) => {

@@ -7,6 +7,7 @@ import SummaryScreen from './screens/SummaryScreen'
 import SettingsScreen from './screens/SettingsScreen'
 import PaymentLogScreen from './screens/PaymentLogScreen'
 import SiteSummaryScreen from './screens/SiteSummaryScreen'
+import LockScreen from './screens/LockScreen'
 import BottomNav from './components/BottomNav'
 import useStore from './store/useStore'
 import { TRANSLATIONS } from './i18n/translations'
@@ -36,7 +37,9 @@ export default function App() {
   const [showExitAlert, setShowExitAlert] = useState(false)
   const [isShutdown, setIsShutdown]       = useState(false)
   const [isLanding, setIsLanding]         = useState(true)
-  const { theme, language, loadFromCloud } = useStore()
+  const { theme, language, loadFromCloud, appLock } = useStore()
+  
+  const [isUnlocked, setIsUnlocked] = useState(!appLock?.enabled)
 
   // Initialize DB + cloud sync on mount
   useEffect(() => {
@@ -114,6 +117,7 @@ export default function App() {
 
   if (isShutdown) return <ShutdownScreen />
   if (isLanding)  return <LandingScreen />
+  if (appLock?.enabled && !isUnlocked) return <LockScreen onUnlock={() => setIsUnlocked(true)} />
 
   const lang = TRANSLATIONS[language] || TRANSLATIONS.en
 
@@ -179,7 +183,7 @@ export default function App() {
 function LandingScreen() {
   return (
     <div style={{
-      position: 'fixed', inset: 0, zIndex: 500, background: '#FFFFFF',
+      position: 'fixed', inset: 0, zIndex: 500, background: 'var(--bg)',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 32
     }}>
       <div style={{ position: 'relative', width: 152, height: 152, marginBottom: 30 }}>
@@ -187,7 +191,7 @@ function LandingScreen() {
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', transform: 'rotate(-90deg)' }}
           viewBox="0 0 100 100"
         >
-          <circle cx="50" cy="50" r="44" fill="none" stroke="#EBEBEB" strokeWidth="1.5" />
+          <circle cx="50" cy="50" r="44" fill="none" stroke="var(--border)" strokeWidth="1.5" />
           <circle cx="50" cy="50" r="44" fill="none"
             stroke="#FDE047" strokeWidth="4.2"
             strokeLinecap="round" className="animate-trace"
@@ -195,8 +199,8 @@ function LandingScreen() {
         </svg>
         <div style={{
           position: 'absolute', inset: 11,
-          borderRadius: '50%', overflow: 'hidden', background: '#fff',
-          boxShadow: '0 2px 14px rgba(0,0,0,0.07)'
+          borderRadius: '50%', overflow: 'hidden', background: '#000',
+          boxShadow: '0 2px 14px rgba(0,0,0,0.2)'
         }}>
           <img src="/logo.jpeg" alt="Radadiya Construction"
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -205,13 +209,13 @@ function LandingScreen() {
       </div>
       <div style={{ textAlign: 'center', userSelect: 'none' }}>
         <h1 className="animate-title-glow" style={{
-          fontSize: 20, fontWeight: 800, color: '#111111',
+          fontSize: 20, fontWeight: 800, color: 'var(--text)',
           letterSpacing: '-0.01em', margin: '0 0 10px'
         }}>
           Radadiya Construction
         </h1>
         <p style={{
-          fontSize: 9, fontWeight: 700, color: '#AAAAAA',
+          fontSize: 9, fontWeight: 700, color: 'var(--text3)',
           textTransform: 'uppercase', letterSpacing: '0.38em', margin: 0
         }}>
           VADODARA · INDIA
