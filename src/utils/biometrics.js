@@ -3,7 +3,9 @@
 const bufferToBase64url = (buffer) => {
   const bytes = new Uint8Array(buffer)
   let str = ''
-  for (let charCode of bytes) str += String.fromCharCode(CharCode)
+  for (let charCode of bytes) {
+    str += String.fromCharCode(charCode)
+  }
   const base64String = btoa(str)
   return base64String.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
 }

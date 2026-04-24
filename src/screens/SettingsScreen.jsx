@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Download, Trash2, Share2, ChevronRight, Moon, Sun, ArrowLeft, SmartphoneIcon, ShieldAlert, Check, Cloud, Database, Edit2, User, Lock } from 'lucide-react'
 import useStore from '../store/useStore'
 import { formatINR } from '../utils/helpers'
-import { registerBiometric } from '../utils/biometrics'
+import { registerBiometric, verifyBiometric } from '../utils/biometrics'
 import { useLang } from '../App'
 import { LANG_NAMES } from '../i18n/translations'
 
@@ -17,8 +17,10 @@ export default function SettingsScreen({ onNavigate, onBack }) {
   const [pinSetupModal, setPinSetupModal] = useState(false)
   const [pinStep, setPinStep] = useState(1)
   const [tempPin, setTempPin] = useState('')
-  const [confirmPin, setConfirmPin] = useState('')
   const [tempBio, setTempBio] = useState(true)
+  const [disablePinModal, setDisablePinModal] = useState(false)
+  const [disablePinInput, setDisablePinInput] = useState('')
+  const [disableTarget, setDisableTarget] = useState(null)
   const [clearModal, setClearModal] = useState(false)
   const [deleteSiteId, setDeleteSiteId] = useState(null)
   const [shareModalOpen, setShareModalOpen] = useState(false)
@@ -236,9 +238,24 @@ export default function SettingsScreen({ onNavigate, onBack }) {
                   </div>
                 </div>
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     if (appLock?.enabled) {
-                      setAppLock({ enabled: false, pin: '', useBiometrics: false })
+                      const disableIt = () => {
+                        setAppLock({ enabled: false, pin: '', useBiometrics: false, credentialId: null })
+                      }
+                      
+                      if (appLock.useBiometrics && appLock.credentialId && window.PublicKeyCredential) {
+                        try {
+                          await verifyBiometric(appLock.credentialId)
+                          disableIt()
+                        } catch (err) {
+                          setDisableTarget('appLock')
+                          setDisablePinModal(true)
+                        }
+                      } else {
+                        setDisableTarget('appLock')
+                        setDisablePinModal(true)
+                      }
                     } else {
                       setPinSetupModal(true)
                     }
@@ -279,7 +296,13 @@ export default function SettingsScreen({ onNavigate, onBack }) {
                           alert("Biometric setup failed or was cancelled.")
                         }
                       } else {
-                        setAppLock({ useBiometrics: false, credentialId: null })
+                        try {
+                          await verifyBiometric(appLock.credentialId)
+                          setAppLock({ useBiometrics: false, credentialId: null })
+                        } catch (err) {
+                          setDisableTarget('biometrics')
+                          setDisablePinModal(true)
+                        }
                       }
                     }}
                     style={{
@@ -708,6 +731,73 @@ export default function SettingsScreen({ onNavigate, onBack }) {
                 disabled={pinStep === 1 ? tempPin.length !== 4 : confirmPin.length !== 4}
               >
                 {pinStep === 1 ? 'Next' : 'Save & Lock'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PIN AUTHENTICATION MODAL (FOR DISABLING) */}
+      {disablePinModal && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(0,0,0,0.4)',
+          backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'flex-end'
+        }}>
+          <div className="animate-slide-up" style={{
+            background: 'var(--bg)', width: '100%', borderTopLeftRadius: 24, borderTopRightRadius: 24,
+            padding: '24px 20px 40px', boxShadow: '0 -10px 40px rgba(0,0,0,0.1)'
+          }}>
+            <h3 style={{ fontSize: 19, fontWeight: 800, color: 'var(--text)', margin: '0 0 8px' }}>Enter PIN</h3>
+            <p style={{ fontSize: 13, color: 'var(--text3)', margin: '0 0 20px', lineHeight: 1.5 }}>
+              Please enter your 4-digit PIN to authenticate.
+            </p>
+            <input
+              type="number"
+              placeholder="Enter 4-Digit PIN"
+              value={disablePinInput}
+              onChange={e => setDisablePinInput(e.target.value.slice(0, 4))}
+              className="t-input"
+              autoFocus
+              style={{ textAlign: 'center', fontSize: 24, letterSpacing: '0.2em', marginBottom: 24 }}
+            />
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button
+                onClick={() => {
+                  setDisablePinModal(false)
+                  setDisablePinInput('')
+                  setDisableTarget(null)
+                }}
+                style={{
+                  flex: 1, height: 48, borderRadius: 24, fontSize: 14, fontWeight: 700,
+                  color: 'var(--text)', background: 'var(--bg2)', border: '1px solid var(--border)', cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  if (disablePinInput === appLock.pin) {
+                    if (disableTarget === 'appLock') {
+                      setAppLock({ enabled: false, pin: '', useBiometrics: false, credentialId: null })
+                    } else if (disableTarget === 'biometrics') {
+                      setAppLock({ useBiometrics: false, credentialId: null })
+                    }
+                    setDisablePinModal(false)
+                    setDisablePinInput('')
+                    setDisableTarget(null)
+                  } else {
+                    alert("Incorrect PIN")
+                    setDisablePinInput('')
+                  }
+                }}
+                style={{
+                  flex: 1, height: 48, borderRadius: 24, fontSize: 14, fontWeight: 700,
+                  color: 'var(--bg)', background: 'var(--text)', border: 'none', cursor: 'pointer',
+                  opacity: disablePinInput.length === 4 ? 1 : 0.5, transition: 'opacity 0.2s'
+                }}
+                disabled={disablePinInput.length !== 4}
+              >
+                Authenticate
               </button>
             </div>
           </div>
