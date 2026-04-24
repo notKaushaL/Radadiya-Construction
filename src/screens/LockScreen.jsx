@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Fingerprint, Delete } from 'lucide-react'
 import useStore from '../store/useStore'
+import { verifyBiometric } from '../utils/biometrics'
 
 export default function LockScreen({ onUnlock }) {
   const { appLock } = useStore()
@@ -9,28 +10,14 @@ export default function LockScreen({ onUnlock }) {
 
   // Handle Biometric Unlock
   const handleBiometric = async () => {
-    if (!appLock.useBiometrics) return
+    if (!appLock.useBiometrics || !appLock.credentialId) return
     try {
-      // Trigger native biometric prompt using WebAuthn fallback/mock or conditional UI
-      // For local PWAs, relying entirely on PublicKeyCredential requires a complex registration flow.
-      // We will try to trigger the navigator.credentials API. If it fails or is cancelled, they can use PIN.
       if (window.PublicKeyCredential) {
-        // We do a dummy assertion to trigger the OS prompt.
-        const challenge = new Uint8Array(32)
-        window.crypto.getRandomValues(challenge)
-        
-        await navigator.credentials.get({
-          publicKey: {
-            challenge,
-            timeout: 60000,
-            userVerification: "required"
-          }
-        })
-        onUnlock() // If it succeeds without throwing, unlock
+        await verifyBiometric(appLock.credentialId)
+        onUnlock() 
       }
     } catch (err) {
       console.log('Biometric cancelled or failed', err)
-      // They can just use the PIN
     }
   }
 

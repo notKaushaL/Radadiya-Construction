@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Download, Trash2, Share2, ChevronRight, Moon, Sun, ArrowLeft, SmartphoneIcon, ShieldAlert, Check, Cloud, Database, Edit2, User, Lock } from 'lucide-react'
 import useStore from '../store/useStore'
 import { formatINR } from '../utils/helpers'
+import { registerBiometric } from '../utils/biometrics'
 import { useLang } from '../App'
 import { LANG_NAMES } from '../i18n/translations'
 
@@ -269,7 +270,18 @@ export default function SettingsScreen({ onNavigate, onBack }) {
                     <p style={{ fontSize: 11, color: 'var(--text3)', margin: '2px 0 0' }}>Unlock faster with biometrics</p>
                   </div>
                   <button
-                    onClick={() => setAppLock({ useBiometrics: !appLock.useBiometrics })}
+                    onClick={async () => {
+                      if (!appLock.useBiometrics) {
+                        try {
+                          const credentialId = await registerBiometric()
+                          setAppLock({ useBiometrics: true, credentialId })
+                        } catch (err) {
+                          alert("Biometric setup failed or was cancelled.")
+                        }
+                      } else {
+                        setAppLock({ useBiometrics: false, credentialId: null })
+                      }
+                    }}
                     style={{
                       width: 50, height: 28, borderRadius: 9999, padding: 3, cursor: 'pointer',
                       background: appLock?.useBiometrics ? 'var(--text)' : 'var(--border)', border: 'none',
@@ -654,12 +666,27 @@ export default function SettingsScreen({ onNavigate, onBack }) {
                 Cancel
               </button>
               <button
-                onClick={() => {
+                onClick={async () => {
                   if (pinStep === 1) {
                     if (tempPin.length === 4) setPinStep(2)
                   } else {
                     if (confirmPin === tempPin) {
-                      setAppLock({ enabled: true, pin: tempPin, useBiometrics: tempBio })
+                      let credentialId = null
+                      if (tempBio) {
+                        try {
+                          credentialId = await registerBiometric()
+                        } catch (err) {
+                          alert("Biometric registration failed or was cancelled. Falling back to PIN only.")
+                          console.log(err)
+                        }
+                      }
+                      
+                      setAppLock({ 
+                        enabled: true, 
+                        pin: tempPin, 
+                        useBiometrics: !!credentialId,
+                        credentialId 
+                      })
                       setPinSetupModal(false)
                       setTempPin('')
                       setConfirmPin('')
