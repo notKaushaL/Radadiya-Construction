@@ -1,7 +1,17 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import { nanoid } from '../utils/nanoid'
-import { client } from '../db/setup'
+import { client, initDbClient, initDbSchema } from '../db/setup'
+
+// Safe wrapper for cloud execution
+const executeCloud = async (sqlOrObj) => {
+  if (!client) return
+  try {
+    await client.execute(sqlOrObj)
+  } catch (error) {
+    console.error('Cloud Sync Error:', error)
+  }
+}
 
 /**
  * RADADIYA CONSTRUCTION — ZUSTAND STORE with Turso Cloud Sync
@@ -17,12 +27,27 @@ const useStore = create(
       theme: 'light',
       language: 'en',
       lastSync: null,
+      
+      syncConfig: { url: '', token: '' },
+      setSyncConfig: async (url, token) => {
+        set({ syncConfig: { url, token } })
+        await get().loadFromCloud()
+      },
 
       // ─── CLOUD SYNC ─────────────────────────────────────────
-      // Hydrate from Turso on app start.
-      // Only replaces local data if cloud has records (avoids wiping
-      // local-only data when Turso is temporarily empty or unreachable).
       loadFromCloud: async () => {
+        const { syncConfig } = get()
+        if (!syncConfig.url || !syncConfig.token) {
+          console.log('No Turso keys found. Running in offline LocalStorage mode.')
+          return
+        }
+
+        const success = initDbClient(syncConfig.url, syncConfig.token)
+        if (!success) return
+
+        await initDbSchema()
+        if (!client) return
+
         try {
           const sitesRes    = await client.execute("SELECT * FROM sites")
           const entriesRes  = await client.execute("SELECT * FROM entries")
@@ -77,21 +102,17 @@ const useStore = create(
           if (cloudSites.length === 0 && localSites.length > 0) {
             console.log('Cloud empty — pushing local data to cloud...')
             for (const site of localSites) {
-              try {
-                await client.execute({
-                  sql: `INSERT OR IGNORE INTO sites
-                        (id, name, createdAt, status, ownerName, ownerPhone, address, completedAt)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-                  args: [
-                    site.id, site.name, site.createdAt,
-                    site.status || 'active',
-                    site.ownerName || '', site.ownerPhone || '',
-                    site.address || '', site.completedAt || null
-                  ]
-                })
-              } catch (e) {
-                console.error('Push site to cloud failed:', e)
-              }
+              await executeCloud({
+                sql: `INSERT OR IGNORE INTO sites
+                      (id, name, createdAt, status, ownerName, ownerPhone, address, completedAt)
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                args: [
+                  site.id, site.name, site.createdAt,
+                  site.status || 'active',
+                  site.ownerName || '', site.ownerPhone || '',
+                  site.address || '', site.completedAt || null
+                ]
+              })
             }
           }
 
@@ -123,20 +144,16 @@ const useStore = create(
         set((state) => ({ sites: [...state.sites, site] }))
 
         // Cloud sync — INSERT ALL columns so they survive reload
-        try {
-          await client.execute({
-            sql: `INSERT OR IGNORE INTO sites
-                  (id, name, createdAt, status, ownerName, ownerPhone, address, completedAt)
-                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            args: [
-              site.id, site.name, site.createdAt,
-              site.status, site.ownerName, site.ownerPhone,
-              site.address, site.completedAt
-            ]
-          })
-        } catch (error) {
-          console.error('Sync addSite failed:', error)
-        }
+        await executeCloud({
+          sql: `INSERT OR IGNORE INTO sites
+                (id, name, createdAt, status, ownerName, ownerPhone, address, completedAt)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          args: [
+            site.id, site.name, site.createdAt,
+            site.status, site.ownerName, site.ownerPhone,
+            site.address, site.completedAt
+          ]
+        })
 
         return site.id
       },
@@ -148,14 +165,10 @@ const useStore = create(
             s.id === siteId ? { ...s, status, completedAt } : s
           )
         }))
-        try {
-          await client.execute({
-            sql: "UPDATE sites SET status = ?, completedAt = ? WHERE id = ?",
-            args: [status, completedAt, siteId]
-          })
-        } catch (error) {
-          console.error('Sync setSiteStatus failed:', error)
-        }
+        await executeCloud({
+          sql: "UPDATE sites SET status = ?, completedAt = ? WHERE id = ?",
+          args: [status, completedAt, siteId]
+        })
       },
 
       updateSiteName: async (siteId, name) => {
@@ -163,14 +176,10 @@ const useStore = create(
         set((state) => ({
           sites: state.sites.map(s => s.id === siteId ? { ...s, name: name.trim() } : s)
         }))
-        try {
-          await client.execute({
-            sql: "UPDATE sites SET name = ? WHERE id = ?",
-            args: [name.trim(), siteId]
-          })
-        } catch (error) {
-          console.error('Sync updateSiteName failed:', error)
-        }
+        await executeCloud({
+          sql: "UPDATE sites SET name = ? WHERE id = ?",
+          args: [name.trim(), siteId]
+        })
       },
 
       // Update name, client, phone, address together
@@ -183,14 +192,10 @@ const useStore = create(
               : s
           )
         }))
-        try {
-          await client.execute({
-            sql: "UPDATE sites SET name = ?, ownerName = ?, ownerPhone = ?, address = ? WHERE id = ?",
-            args: [name.trim(), ownerName?.trim() || '', ownerPhone?.trim() || '', address?.trim() || '', siteId]
-          })
-        } catch (error) {
-          console.error('Sync updateSiteDetails failed:', error)
-        }
+        await executeCloud({
+          sql: "UPDATE sites SET name = ?, ownerName = ?, ownerPhone = ?, address = ? WHERE id = ?",
+          args: [name.trim(), ownerName?.trim() || '', ownerPhone?.trim() || '', address?.trim() || '', siteId]
+        })
       },
 
       deleteSite: async (siteId) => {
@@ -199,11 +204,7 @@ const useStore = create(
           entries:  state.entries.filter(e  => e.siteId !== siteId),
           payments: state.payments.filter(p => p.siteId !== siteId),
         }))
-        try {
-          await client.execute({ sql: "DELETE FROM sites WHERE id = ?", args: [siteId] })
-        } catch (error) {
-          console.error('Sync deleteSite failed:', error)
-        }
+        await executeCloud({ sql: "DELETE FROM sites WHERE id = ?", args: [siteId] })
       },
 
       // ─── ENTRY ACTIONS ──────────────────────────────────────
@@ -224,20 +225,16 @@ const useStore = create(
 
         set((state) => ({ entries: [...state.entries, entry] }))
 
-        try {
-          await client.execute({
-            sql: `INSERT OR IGNORE INTO entries
-                  (id, siteId, type, category, amount, date, note, qty, unitPrice, qtyDetail, createdAt)
-                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            args: [
-              entry.id, entry.siteId, entry.type, entry.category,
-              entry.amount, entry.date, entry.note,
-              entry.qty, entry.unitPrice, entry.qtyDetail, entry.createdAt
-            ]
-          })
-        } catch (error) {
-          console.error('Sync addEntry failed:', error)
-        }
+        await executeCloud({
+          sql: `INSERT OR IGNORE INTO entries
+                (id, siteId, type, category, amount, date, note, qty, unitPrice, qtyDetail, createdAt)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          args: [
+            entry.id, entry.siteId, entry.type, entry.category,
+            entry.amount, entry.date, entry.note,
+            entry.qty, entry.unitPrice, entry.qtyDetail, entry.createdAt
+          ]
+        })
 
         return entry.id
       },
@@ -250,31 +247,23 @@ const useStore = create(
               : e
           )
         }))
-        try {
-          await client.execute({
-            sql: `UPDATE entries SET
-                  type=?, category=?, amount=?, date=?, note=?,
-                  qty=?, unitPrice=?, qtyDetail=?
-                  WHERE id=?`,
-            args: [
-              data.type, data.category, parseFloat(data.amount),
-              data.date, data.note || '',
-              data.qty || null, data.unitPrice || null, data.qtyDetail || '',
-              entryId
-            ]
-          })
-        } catch (error) {
-          console.error('Sync updateEntry failed:', error)
-        }
+        await executeCloud({
+          sql: `UPDATE entries SET
+                type=?, category=?, amount=?, date=?, note=?,
+                qty=?, unitPrice=?, qtyDetail=?
+                WHERE id=?`,
+          args: [
+            data.type, data.category, parseFloat(data.amount),
+            data.date, data.note || '',
+            data.qty || null, data.unitPrice || null, data.qtyDetail || '',
+            entryId
+          ]
+        })
       },
 
       deleteEntry: async (entryId) => {
         set((state) => ({ entries: state.entries.filter(e => e.id !== entryId) }))
-        try {
-          await client.execute({ sql: "DELETE FROM entries WHERE id = ?", args: [entryId] })
-        } catch (error) {
-          console.error('Sync deleteEntry failed:', error)
-        }
+        await executeCloud({ sql: "DELETE FROM entries WHERE id = ?", args: [entryId] })
       },
 
       // ─── PAYMENT ACTIONS ────────────────────────────────────
@@ -291,27 +280,19 @@ const useStore = create(
 
         set((state) => ({ payments: [...state.payments, payment] }))
 
-        try {
-          await client.execute({
-            sql: `INSERT OR IGNORE INTO payments
-                  (id, siteId, amount, method, date, note, createdAt)
-                  VALUES (?, ?, ?, ?, ?, ?, ?)`,
-            args: [payment.id, payment.siteId, payment.amount, payment.method, payment.date, payment.note, payment.createdAt]
-          })
-        } catch (error) {
-          console.error('Sync addPayment failed:', error)
-        }
+        await executeCloud({
+          sql: `INSERT OR IGNORE INTO payments
+                (id, siteId, amount, method, date, note, createdAt)
+                VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          args: [payment.id, payment.siteId, payment.amount, payment.method, payment.date, payment.note, payment.createdAt]
+        })
 
         return payment.id
       },
 
       deletePayment: async (paymentId) => {
         set((state) => ({ payments: state.payments.filter(p => p.id !== paymentId) }))
-        try {
-          await client.execute({ sql: "DELETE FROM payments WHERE id = ?", args: [paymentId] })
-        } catch (error) {
-          console.error('Sync deletePayment failed:', error)
-        }
+        await executeCloud({ sql: "DELETE FROM payments WHERE id = ?", args: [paymentId] })
       },
 
       // ─── SELECTORS ──────────────────────────────────────────
@@ -430,13 +411,9 @@ const useStore = create(
 
       clearAllData: async () => {
         set({ sites: [], entries: [], payments: [] })
-        try {
-          await client.execute("DELETE FROM entries")
-          await client.execute("DELETE FROM payments")
-          await client.execute("DELETE FROM sites")
-        } catch (error) {
-          console.error('Sync clearAllData failed:', error)
-        }
+        await executeCloud("DELETE FROM entries")
+        await executeCloud("DELETE FROM payments")
+        await executeCloud("DELETE FROM sites")
       },
 
       exportData: () => {

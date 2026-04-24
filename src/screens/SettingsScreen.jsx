@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Download, Trash2, Share2, ChevronRight, Moon, Sun, ArrowLeft, SmartphoneIcon, ShieldAlert, Check } from 'lucide-react'
+import { Download, Trash2, Share2, ChevronRight, Moon, Sun, ArrowLeft, SmartphoneIcon, ShieldAlert, Check, Cloud, Database } from 'lucide-react'
 import useStore from '../store/useStore'
 import { formatINR } from '../utils/helpers'
 import { useLang } from '../App'
@@ -9,6 +9,7 @@ export default function SettingsScreen({ onNavigate, onBack }) {
   const {
     sites, clearAllData, deleteSite, exportData, generateWhatsAppSummary,
     getGrandTotal, getSiteTotal, theme, setTheme, language, setLanguage,
+    syncConfig, setSyncConfig
   } = useStore()
 
   const lang = useLang()
@@ -16,6 +17,9 @@ export default function SettingsScreen({ onNavigate, onBack }) {
   const [deleteSiteId, setDeleteSiteId] = useState(null)
   const [shareModalOpen, setShareModalOpen] = useState(false)
   const [selectedShareSite, setSelectedShareSite] = useState('')
+  const [syncModalOpen, setSyncModalOpen] = useState(false)
+  const [dbUrl, setDbUrl] = useState(syncConfig?.url || '')
+  const [dbToken, setDbToken] = useState(syncConfig?.token || '')
 
   const grandTotal = getGrandTotal()
   const siteToDelete = sites.find(s => s.id === deleteSiteId)
@@ -225,6 +229,7 @@ export default function SettingsScreen({ onNavigate, onBack }) {
           <div>
             <p className="t-section-label">{lang.dataStorage}</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {row(<Cloud size={18} />, 'Cloud Sync Setup', syncConfig?.url ? 'Connected to Turso' : 'Local Storage Only', () => setSyncModalOpen(true))}
               {row(<Share2 size={18} />, lang.shareSummary, null, () => setShareModalOpen(true))}
               {row(<Download size={18} />, lang.exportData, null, handleExport)}
               {row(<ShieldAlert size={18} />, lang.clearAll, lang.clearAllSub, () => setClearModal(true))}
@@ -311,6 +316,58 @@ export default function SettingsScreen({ onNavigate, onBack }) {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {syncModalOpen && (
+        <div className="t-overlay" onClick={() => setSyncModalOpen(false)}>
+          <div className="t-modal animate-slide-up" onClick={e => e.stopPropagation()}>
+            <div style={{ width: 40, height: 4, borderRadius: 4, background: 'var(--border)', margin: '0 auto 24px' }} />
+            <div style={{ textAlign: 'center', marginBottom: 24 }}>
+              <div style={{
+                width: 64, height: 64, borderRadius: '50%', background: 'var(--bg2)',
+                border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px'
+              }}>
+                <Database size={26} color="var(--text)" />
+              </div>
+              <h2 className="t-heading" style={{ marginBottom: 8, fontSize: 20 }}>Cloud Sync</h2>
+              <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.6, margin: 0 }}>
+                Enter your Turso Database credentials to sync your data. Leave blank to run offline.
+              </p>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 24 }}>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--text2)', marginLeft: 4, marginBottom: 6, display: 'block' }}>Database URL</label>
+                <input
+                  type="text" value={dbUrl} onChange={e => setDbUrl(e.target.value)}
+                  placeholder="libsql://your-db.turso.io" className="t-input"
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--text2)', marginLeft: 4, marginBottom: 6, display: 'block' }}>Auth Token</label>
+                <input
+                  type="password" value={dbToken} onChange={e => setDbToken(e.target.value)}
+                  placeholder="eyJhbGciOiJFZERTQSIsInR..." className="t-input"
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <button 
+                onClick={async () => {
+                  await setSyncConfig(dbUrl.trim(), dbToken.trim())
+                  setSyncModalOpen(false)
+                }} 
+                className="btn-fab-full"
+              >
+                Save & Connect
+              </button>
+              <button onClick={() => setSyncModalOpen(false)} style={{ height: 48, color: 'var(--text3)', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer' }}>
+                {lang.cancel}
+              </button>
+            </div>
           </div>
         </div>
       )}

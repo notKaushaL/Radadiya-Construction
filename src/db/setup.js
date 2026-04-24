@@ -1,11 +1,26 @@
 import { createClient } from '@libsql/client'
 
-const url       = import.meta.env.VITE_TURSO_URL
-const authToken = import.meta.env.VITE_TURSO_TOKEN
+export let client = null
 
-export const client = createClient({ url, authToken })
+export function initDbClient(url, authToken) {
+  if (!url || !authToken) {
+    client = null
+    return false
+  }
+  
+  try {
+    client = createClient({ url, authToken })
+    return true
+  } catch (error) {
+    console.error('Failed to create Turso client:', error)
+    client = null
+    return false
+  }
+}
 
-export async function initDb() {
+export async function initDbSchema() {
+  if (!client) return
+
   try {
     // ── sites — full schema with all fields ──────────────────────────────────
     await client.execute(`

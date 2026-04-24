@@ -11,7 +11,6 @@ import BottomNav from './components/BottomNav'
 import useStore from './store/useStore'
 import { TRANSLATIONS } from './i18n/translations'
 import { Power, CheckCircle2 } from 'lucide-react'
-import { initDb } from './db/setup'
 
 export const LangContext = createContext(TRANSLATIONS.en)
 export const useLang = () => useContext(LangContext)
@@ -43,10 +42,9 @@ export default function App() {
   useEffect(() => {
     const startup = async () => {
       try {
-        await initDb()
         await loadFromCloud()
-      } catch (e) {
-        console.error('Startup error:', e)
+      } catch (err) {
+        console.error('Startup error:', err)
       }
     }
     startup()
