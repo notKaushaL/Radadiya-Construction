@@ -185,27 +185,10 @@ function LandingScreen() {
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', transform: 'rotate(-90deg)' }}
           viewBox="0 0 100 100"
         >
-          <defs>
-            <filter id="strokeGlow" x="-40%" y="-40%" width="180%" height="180%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
-              <feFlood floodColor="#C4922A" floodOpacity="0.5" result="goldColor" />
-              <feComposite in="goldColor" in2="blur" operator="in" result="goldBlur" />
-              <feMerge>
-                <feMergeNode in="goldBlur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
           <circle cx="50" cy="50" r="44" fill="none" stroke="#EBEBEB" strokeWidth="1.5" />
           <circle cx="50" cy="50" r="44" fill="none"
-            stroke="rgba(196, 148, 28, 0.28)" strokeWidth="12"
-            strokeLinecap="round" className="animate-trace-glow"
-            style={{ filter: 'blur(6px)' }}
-          />
-          <circle cx="50" cy="50" r="44" fill="none"
-            stroke="#C4922A" strokeWidth="4.2"
+            stroke="#FDE047" strokeWidth="4.2"
             strokeLinecap="round" className="animate-trace"
-            filter="url(#strokeGlow)"
           />
         </svg>
         <div style={{

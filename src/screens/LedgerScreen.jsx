@@ -12,6 +12,7 @@ export default function LedgerScreen({ onNavigate, onBack, siteId }) {
 
   const [showOptions, setShowOptions] = useState(false)
   const [showEdit, setShowEdit] = useState(false)
+  const [deleteEntryId, setDeleteEntryId] = useState(null)
   const [editName, setEditName]     = useState('')
   const [editOwner, setEditOwner]   = useState('')
   const [editPhone, setEditPhone]   = useState('')
@@ -54,74 +55,58 @@ export default function LedgerScreen({ onNavigate, onBack, siteId }) {
   return (
     <div className="screen">
       {/* Header */}
-      <div className="t-header" style={{ paddingBottom: 12 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
-            <button onClick={onBack} className="btn-back" style={{ flexShrink: 0 }}>
-              <ArrowLeft size={19} />
-            </button>
-            
-            <h1 className="t-heading" style={{ fontSize: 18, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0 }}>
-              {site.name}
-            </h1>
+      <div className="t-header" style={{ paddingBottom: 16, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+        <div style={{ display: 'flex', gap: 14, flex: 1, minWidth: 0 }}>
+          <button onClick={onBack} className="btn-back" style={{ flexShrink: 0, marginTop: 4 }}>
+            <ArrowLeft size={20} />
+          </button>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0, minWidth: 0 }}>
+            {/* Row 1: Site Name + Status Badge */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+              <h1 className="t-heading" style={{ fontSize: 18, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0, lineHeight: 1.1 }}>
+                {site.name}
+              </h1>
+              
+              <div style={{
+                display: 'flex', alignItems: 'center', padding: '3px 10px', borderRadius: 12,
+                background: isCompleted ? 'var(--bg2)' : 'rgba(34, 197, 94, 0.1)',
+                border: isCompleted ? '1px solid var(--border)' : '1px solid rgba(34, 197, 94, 0.2)',
+                flexShrink: 0,
+              }}>
+                <span style={{ fontSize: 10, fontWeight: 800, color: isCompleted ? 'var(--text3)' : '#16a34a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  {isCompleted ? 'Completed' : 'Active'}
+                </span>
+              </div>
+            </div>
 
-            <button
-              onClick={() => { setEditName(site.name); setEditOwner(site.ownerName || ''); setEditPhone(site.ownerPhone || ''); setEditAddr(site.address || ''); setShowEdit(true) }}
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28,
-                borderRadius: '50%', background: 'var(--bg2)', border: '1px solid var(--border)',
-                cursor: 'pointer', flexShrink: 0
-              }}
-            >
-              <Edit2 size={11} color="var(--text3)" />
-            </button>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
-            <button onClick={handleShare} className="btn-back" style={{ width: 34, height: 34 }}>
-              <Share2 size={16} />
-            </button>
-            <button onClick={() => setShowOptions(true)} className="btn-back" style={{ width: 34, height: 34 }}>
-              <MoreVertical size={17} />
-            </button>
-          </div>
-        </div>
-
-        {/* Client Info Section + Status Badge */}
-        <div style={{ marginTop: 6, paddingLeft: 50, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 8 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {/* Row 2: Owner Name */}
             {site.ownerName && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <User size={11} color="var(--text3)" />
-                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text2)' }}>{site.ownerName}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                <User size={13} color="var(--text3)" />
+                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text3)' }}>{site.ownerName}</span>
               </div>
             )}
+            
+            {/* Row 3: Owner Phone */}
             {site.ownerPhone && (
               <a
                 href={`tel:${site.ownerPhone}`}
-                style={{ display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}
               >
-                <Phone size={11} color="var(--text3)" />
-                <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)' }}>
+                <Phone size={13} color="var(--text3)" />
+                <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text3)' }}>
                   {site.ownerPhone}
                 </span>
               </a>
             )}
           </div>
+        </div>
 
-          {/* Status Badge - In line with phone row */}
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 4, padding: '1.5px 6px', borderRadius: 4,
-            background: isCompleted ? 'var(--bg2)' : 'rgba(34, 197, 94, 0.1)',
-            border: `1px solid ${isCompleted ? 'var(--border)' : 'rgba(34, 197, 94, 0.2)'}`,
-            flexShrink: 0,
-            marginBottom: 2
-          }}>
-            <div style={{ width: 4, height: 4, borderRadius: '50%', background: isCompleted ? 'var(--text3)' : '#22c55e' }} />
-            <span style={{ fontSize: 8, fontWeight: 800, color: isCompleted ? 'var(--text3)' : '#16a34a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              {isCompleted ? 'Completed' : 'Active'}
-            </span>
-          </div>
+        <div style={{ flexShrink: 0, marginTop: 4 }}>
+          <button onClick={() => setShowOptions(true)} className="btn-back" style={{ width: 38, height: 38, borderRadius: 12 }}>
+            <MoreVertical size={18} />
+          </button>
         </div>
       </div>
 
@@ -168,12 +153,12 @@ export default function LedgerScreen({ onNavigate, onBack, siteId }) {
                 {/* Date header */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, padding: '0 2px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <Calendar size={12} color="var(--text3)" />
-                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    <Calendar size={13} color="var(--text2)" />
+                    <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--text)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                       {new Date(group.date + 'T00:00:00').toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </span>
                   </div>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text2)' }}>{formatINR(group.total)}</span>
+                  <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--text)' }}>{formatINR(group.total)}</span>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -183,7 +168,7 @@ export default function LedgerScreen({ onNavigate, onBack, siteId }) {
                       entry={entry}
                       isCompleted={isCompleted}
                       onEdit={() => !isCompleted && onNavigate('addEntry', { siteId, entryToEdit: entry })}
-                      onDelete={() => deleteEntry(entry.id)}
+                      onDelete={() => setDeleteEntryId(entry.id)}
                       typeLabel={typeLabel}
                     />
                   ))}
@@ -218,17 +203,19 @@ export default function LedgerScreen({ onNavigate, onBack, siteId }) {
           <div className="t-modal animate-slide-up" onClick={e => e.stopPropagation()}>
             <div style={{ width: 40, height: 4, borderRadius: 4, background: 'var(--border)', margin: '0 auto 24px' }} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              
               <button
-                onClick={() => { setSiteStatus(siteId, isCompleted ? 'active' : 'completed'); setShowOptions(false) }}
+                onClick={() => { setEditName(site.name); setEditOwner(site.ownerName || ''); setEditPhone(site.ownerPhone || ''); setEditAddr(site.address || ''); setShowEdit(true); setShowOptions(false) }}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 14, height: 60, padding: '0 16px',
                   background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 14,
                   cursor: 'pointer', color: 'var(--text)', fontSize: 15, fontWeight: 600
                 }}
               >
-                {isCompleted ? <RotateCcw size={18} color="var(--text)" /> : <CheckCircle2 size={18} color="var(--text)" />}
-                {isCompleted ? t.reopenProject : t.markCompleted}
+                <Edit2 size={18} color="var(--text)" />
+                Edit Site Details
               </button>
+
               <button
                 onClick={() => { handleShare(); setShowOptions(false) }}
                 style={{
@@ -238,14 +225,61 @@ export default function LedgerScreen({ onNavigate, onBack, siteId }) {
                 }}
               >
                 <Share2 size={18} color="var(--text)" />
-                {t.shareSummary}
+                {t.shareSummary || 'Share Summary'}
               </button>
+
+              <button
+                onClick={() => { setSiteStatus(siteId, isCompleted ? 'active' : 'completed'); setShowOptions(false) }}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 14, height: 60, padding: '0 16px',
+                  background: isCompleted ? 'var(--bg2)' : 'rgba(34, 197, 94, 0.1)', 
+                  border: isCompleted ? '1px solid var(--border)' : '1px solid rgba(34, 197, 94, 0.2)', 
+                  borderRadius: 14,
+                  cursor: 'pointer', color: isCompleted ? 'var(--text)' : '#16a34a', fontSize: 15, fontWeight: 600
+                }}
+              >
+                {isCompleted ? <RotateCcw size={18} color="var(--text)" /> : <CheckCircle2 size={18} color="#16a34a" />}
+                {isCompleted ? t.reopenProject : t.markCompleted || 'Mark as Completed'}
+              </button>
+
               <button
                 onClick={() => setShowOptions(false)}
                 style={{ height: 52, color: 'var(--text3)', fontWeight: 700, fontSize: 14, background: 'none', border: 'none', cursor: 'pointer', marginTop: 4 }}
               >
                 {t.cancel}
               </button>
+
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteEntryId && (
+        <div className="t-overlay" onClick={() => setDeleteEntryId(null)}>
+          <div className="t-modal animate-slide-up" onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '10px 0' }}>
+              <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--bg2)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                <Trash2 size={28} color="var(--text2)" />
+              </div>
+              <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text)', margin: '0 0 8px' }}>Delete Entry?</h3>
+              <p style={{ fontSize: 14, color: 'var(--text2)', margin: '0 0 24px', lineHeight: 1.4 }}>
+                Are you sure you want to remove this expense? This action cannot be undone.
+              </p>
+              <div style={{ display: 'flex', gap: 12, width: '100%' }}>
+                <button
+                  onClick={() => setDeleteEntryId(null)}
+                  style={{ flex: 1, height: 48, borderRadius: 12, background: 'var(--bg2)', color: 'var(--text2)', fontSize: 15, fontWeight: 700, border: '1px solid var(--border)', cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => { deleteEntry(deleteEntryId); setDeleteEntryId(null); }}
+                  style={{ flex: 1, height: 48, borderRadius: 12, background: 'var(--text2)', color: 'var(--bg)', fontSize: 15, fontWeight: 700, border: 'none', cursor: 'pointer' }}
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -309,10 +343,11 @@ export default function LedgerScreen({ onNavigate, onBack, siteId }) {
 
 function EntryCard({ entry, isCompleted, onEdit, onDelete, typeLabel }) {
   const [pressed, setPressed] = useState(false)
+  const [expanded, setExpanded] = useState(false)
 
   return (
     <div
-      onClick={onEdit}
+      onClick={() => !isCompleted && setExpanded(!expanded)}
       onMouseDown={() => setPressed(true)}
       onMouseUp={() => setPressed(false)}
       onTouchStart={() => setPressed(true)}
@@ -320,7 +355,7 @@ function EntryCard({ entry, isCompleted, onEdit, onDelete, typeLabel }) {
       style={{
         background: 'var(--card-bg)', border: '1px solid var(--border)', borderRadius: 16,
         padding: '14px 16px', cursor: isCompleted ? 'default' : 'pointer',
-        transform: pressed && !isCompleted ? 'scale(0.97)' : 'scale(1)',
+        transform: pressed && !isCompleted && !expanded ? 'scale(0.97)' : 'scale(1)',
         transition: 'transform 0.12s ease',
         userSelect: 'none',
       }}
@@ -336,7 +371,7 @@ function EntryCard({ entry, isCompleted, onEdit, onDelete, typeLabel }) {
             }}>
               {typeLabel[entry.type] || entry.type}
             </span>
-            <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 160 }}>
+            <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 160 }}>
               {entry.category}
             </span>
           </div>
@@ -350,21 +385,44 @@ function EntryCard({ entry, isCompleted, onEdit, onDelete, typeLabel }) {
           )}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-          <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', margin: 0 }}>{formatINR(entry.amount)}</p>
-          {!isCompleted && (
-            <button
-              onClick={(e) => { e.stopPropagation(); onDelete() }}
-              style={{
-                width: 30, height: 30, borderRadius: '50%', background: 'var(--bg2)',
-                border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer', flexShrink: 0
-              }}
-            >
-              <Trash2 size={13} color="var(--text3)" />
-            </button>
-          )}
+          <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text2)', margin: 0 }}>{formatINR(entry.amount)}</p>
         </div>
       </div>
+
+      {expanded && !isCompleted && (
+        <div style={{ display: 'flex', gap: 8, marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+          <button
+            onClick={(e) => { e.stopPropagation(); onEdit() }}
+            style={{
+              flex: 1, height: 34, borderRadius: 10, background: 'var(--bg2)', color: 'var(--text2)',
+              fontSize: 13, fontWeight: 600, border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
+            }}
+          >
+            <Edit2 size={14} /> Edit
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); setExpanded(false) }}
+            style={{
+              flex: 1, height: 34, borderRadius: 10, background: 'var(--bg2)', color: 'var(--text2)',
+              fontSize: 13, fontWeight: 600, border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}
+          >
+            Close
+          </button>
+          <button
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              onDelete();
+            }}
+            style={{
+              flex: 1, height: 34, borderRadius: 10, background: 'var(--text2)', color: 'var(--bg)',
+              fontSize: 13, fontWeight: 600, border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
+            }}
+          >
+            <Trash2 size={14} /> Delete
+          </button>
+        </div>
+      )}
     </div>
   )
 }

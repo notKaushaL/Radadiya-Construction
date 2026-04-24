@@ -255,7 +255,7 @@ function ActiveSiteCard({ site, total, onNavigate, onEdit, t }) {
               <p className="t-caption" style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 1 }}>{t.investment}</p>
             </div>
           </div>
-          <div style={{ marginTop: -3 }}>
+          <div style={{ marginTop: -8 }}>
             <span className="t-caption" style={{ color: 'var(--text3)', fontSize: 10, lineHeight: 1 }}>
               {new Date(site.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
             </span>
@@ -320,7 +320,9 @@ function ActiveSiteCard({ site, total, onNavigate, onEdit, t }) {
 
 function CompletedSiteCard({ site, total, paymentsTotal, onNavigate, onEdit, t }) {
   const balance = total - paymentsTotal
+  const difference = paymentsTotal - total
   const [pressed, setPressed] = useState(false)
+  const [showSummary, setShowSummary] = useState(false)
 
   return (
     <div
@@ -376,7 +378,7 @@ function CompletedSiteCard({ site, total, paymentsTotal, onNavigate, onEdit, t }
             </div>
           </div>
           {site.completedAt && (
-            <p className="t-caption" style={{ marginTop: -3, fontSize: 10, lineHeight: 1 }}>
+            <p className="t-caption" style={{ marginTop: -8, fontSize: 10, lineHeight: 1 }}>
               {new Date(site.completedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
             </p>
           )}
@@ -401,6 +403,54 @@ function CompletedSiteCard({ site, total, paymentsTotal, onNavigate, onEdit, t }
               <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)' }}>{site.ownerPhone}</span>
             </a>
           )}
+        </div>
+      )}
+
+      {showSummary ? (
+        <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+            <span style={{ fontSize: 13, color: 'var(--text2)' }}>Total Expense</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>{formatINR(total)}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+            <span style={{ fontSize: 13, color: 'var(--text2)' }}>Total Received</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>{formatINR(paymentsTotal)}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 8, borderTop: '1px dashed var(--border)' }}>
+            <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>Difference</span>
+            <span style={{
+              fontSize: 14,
+              fontWeight: 800,
+              color: difference > 0 ? '#22c55e' : difference < 0 ? '#ef4444' : 'var(--text3)'
+            }}>
+              {difference > 0 ? '+' : difference < 0 ? '-' : ''}{formatINR(Math.abs(difference))}
+            </span>
+          </div>
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowSummary(false) }}
+            style={{
+              marginTop: 14, width: '100%', height: 36, borderRadius: 8, border: '1px solid var(--border)',
+              fontSize: 12, fontWeight: 700, cursor: 'pointer',
+              color: 'var(--text2)', background: 'transparent'
+            }}
+          >
+            Hide Summary
+          </button>
+        </div>
+      ) : (
+        <div style={{ marginTop: 14, display: 'flex', justifyContent: 'center' }}>
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowSummary(true) }}
+            style={{
+              width: '60%', height: 42, borderRadius: 12, border: '1px solid var(--border)',
+              fontSize: 13, fontWeight: 700, cursor: 'pointer',
+              color: 'var(--text)', background: 'var(--bg3)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
+            }}
+          >
+            <BarChart3 size={15} />
+            See Summary
+          </button>
         </div>
       )}
     </div>

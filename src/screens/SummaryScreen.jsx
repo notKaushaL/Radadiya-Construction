@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { PieChart, TrendingUp, ChevronDown, Check, X, Building2, ArrowLeft } from 'lucide-react'
+import { PieChart, TrendingUp, ChevronDown, Check, X, Building2, ArrowLeft, Share2 } from 'lucide-react'
 import useStore from '../store/useStore'
 import { formatINR } from '../utils/helpers'
 import { useLang } from '../App'
@@ -42,13 +42,18 @@ export default function SummaryScreen({ onNavigate, onBack }) {
             <h1 className="t-heading">{t.summaryTitle}</h1>
             <p className="t-caption" style={{ marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.12em' }}>{t.projectAnalytics}</p>
           </div>
-          <div style={{
+          <button onClick={() => {
+            const msg = selectedSiteId === 'all' 
+              ? useStore.getState().generateGlobalWhatsAppSummary() 
+              : useStore.getState().generateWhatsAppSummary(selectedSiteId)
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank')
+          }} style={{
             width: 44, height: 44, borderRadius: '50%', background: 'var(--bg2)',
             border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            flexShrink: 0
+            flexShrink: 0, cursor: 'pointer'
           }}>
-            <PieChart size={19} color="var(--text)" />
-          </div>
+            <Share2 size={19} color="var(--text)" />
+          </button>
         </div>
 
         {/* ── Project Selector Button ─────────────────────────────── */}

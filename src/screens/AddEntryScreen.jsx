@@ -1,23 +1,49 @@
 import { useState } from 'react'
-import { ArrowLeft, Save, Check } from 'lucide-react'
+import { 
+  ArrowLeft, Save, Check, 
+  User, Users, HardHat, BrickWall, LayoutGrid, Droplets, Zap, Hammer, PaintRoller, Paintbrush, Building, MoreHorizontal,
+  Layers, Mountain, PaintBucket, Axe, Ruler, Package, Utensils, Home, Truck, Wrench
+} from 'lucide-react'
 import useStore from '../store/useStore'
 import { useLang } from '../App'
 
 const MATERIAL_PRESETS = [
-  { label: 'Cement',  gu: 'સિમેન્ટ', hi: 'सीमेंट',  icon: '🧱' },
-  { label: 'Steel',   gu: 'લોખંડ',   hi: 'स्टील',   icon: '🏗️' },
-  { label: 'Sand',    gu: 'રેતી',     hi: 'रेती',    icon: '⏳' },
-  { label: 'Bricks',  gu: 'ઈંટો',    hi: 'ईंटें',   icon: '🧱' },
-  { label: 'Paint',   gu: 'કલર',     hi: 'पेंट',    icon: '🎨' },
-  { label: 'Wood',    gu: 'લાકડું',   hi: 'लकड़ी',   icon: '🪵' },
-  { label: 'Tiles',   gu: 'ટાઇલ્સ',  hi: 'टाइल्स',  icon: '🔲' },
-  { label: 'Pipes',   gu: 'પાઇપ',    hi: 'पाइप',    icon: '🚰' },
-  { label: 'Gravel',  gu: 'કપચી',    hi: 'कंक्रीट', icon: '🪨' },
-  { label: 'Other',   gu: 'બીજું',   hi: 'अन्य',    icon: '📦' },
+  { label: 'Cement',  gu: 'સિમેન્ટ', hi: 'सीमेंट',  icon: Layers },
+  { label: 'Steel',   gu: 'લોખંડ',   hi: 'स्टील',   icon: Building },
+  { label: 'Sand',    gu: 'રેતી',     hi: 'रेती',    icon: Mountain },
+  { label: 'Bricks',  gu: 'ઈંટો',    hi: 'ईंटें',   icon: BrickWall },
+  { label: 'Paint',   gu: 'કલર',     hi: 'पेंट',    icon: PaintBucket },
+  { label: 'Wood',    gu: 'લાકડું',   hi: 'लकड़ी',   icon: Axe },
+  { label: 'Tiles',   gu: 'ટાઇલ્સ',  hi: 'टाइल्स',  icon: LayoutGrid },
+  { label: 'Pipes',   gu: 'પાઇપ',    hi: 'पाइप',    icon: Ruler },
+  { label: 'Gravel',  gu: 'કપચી',    hi: 'कंक्रीट', icon: Layers },
+  { label: 'Other',   gu: 'બીજું',   hi: 'अन्य',    icon: Package },
 ]
 
-const LABOR_CATS = ['majur','karigar','mason','plumber','electrician','carpenter','painter','welder','salaat','helper']
-const MISC_CATS  = ['food','rent','transport','tools','others']
+const LABOR_PRESETS = [
+  { label: 'Helper',           gu: 'હેલ્પર',          hi: 'हेल्पर',          id: 'helper',         icon: User },
+  { label: 'Karigar',          gu: 'કારીગર',          hi: 'कारीगर',          id: 'karigar',        icon: HardHat },
+  { label: 'Karigar + Helper', gu: 'કારીગર + હેલ્પર', hi: 'कारीगर + हेल्पर', id: 'karigar_helper', icon: Users },
+  { label: 'Chantar Plaster',  gu: 'ચંતર પ્લાસ્ટર',   hi: 'चंतर प्लास्टर',    id: 'chantar_plaster',icon: BrickWall },
+  { label: 'Salaat',           gu: 'સલાટ',            hi: 'सलाट',            id: 'salaat',         icon: LayoutGrid },
+  { label: 'Plumber',          gu: 'પ્લમ્બર',         hi: 'प्लंबर',          id: 'plumber',        icon: Droplets },
+  { label: 'Electrician',      gu: 'ઇલેક્ટ્રિશિયન',   hi: 'इलेक्ट्रीशियन',   id: 'electrician',    icon: Zap },
+  { label: 'Carpenter',        gu: 'સુથાર',           hi: 'बढ़ई',            id: 'carpenter',      icon: Hammer },
+  { label: 'Painter',          gu: 'પેઇન્ટર',         hi: 'पेंटर',           id: 'painter',        icon: PaintRoller },
+  { label: 'POP',              gu: 'પી.ઓ.પી',         hi: 'पी.ओ.पी',         id: 'pop',            icon: Paintbrush },
+  { label: 'Centering',        gu: 'સેન્ટરિંગ',       hi: 'सेंटरिंग',        id: 'centering',      icon: Building },
+  { label: 'Others',           gu: 'બીજું',           hi: 'अन्य',            id: 'others',         icon: MoreHorizontal },
+]
+
+const MISC_PRESETS = [
+  { label: 'Food',      gu: 'જમવાનું',   hi: 'खाना',       id: 'food',      icon: Utensils },
+  { label: 'Rent',      gu: 'ભાડું',      hi: 'किराया',     id: 'rent',      icon: Home },
+  { label: 'Transport', gu: 'ભાડું/ખર્ચ',hi: 'यातायात',    id: 'transport', icon: Truck },
+  { label: 'Tools',     gu: 'સાધનો',    hi: 'उपकरण',      id: 'tools',     icon: Wrench },
+  { label: 'Others',    gu: 'બીજું',    hi: 'अन्य',       id: 'others',    icon: MoreHorizontal },
+]
+
+const QUICK_AMOUNTS = [500, 600, 800, 1000, 1200, 1400, 1500, 2000]
 
 export default function AddEntryScreen({ onNavigate, onBack, siteId, entryToEdit }) {
   const { sites, addEntry, updateEntry, language } = useStore()
@@ -29,7 +55,12 @@ export default function AddEntryScreen({ onNavigate, onBack, siteId, entryToEdit
     if (!entryToEdit) return 'labor'
     return entryToEdit.type || 'labor'
   })
-  const [laborCat, setLaborCat] = useState(entryToEdit?.type === 'labor' ? entryToEdit.category : 'majur')
+  const [laborPreset, setLaborPreset] = useState(() => {
+    if (entryToEdit?.type === 'labor') {
+      return LABOR_PRESETS.find(p => p.id === entryToEdit.category || p.label === entryToEdit.category) || LABOR_PRESETS[0]
+    }
+    return LABOR_PRESETS[0]
+  })
   const [matPreset, setMatPreset] = useState(() => {
     if (entryToEdit?.type === 'material') {
       return MATERIAL_PRESETS.find(p => p.label === entryToEdit.category) || MATERIAL_PRESETS[9]
@@ -40,7 +71,13 @@ export default function AddEntryScreen({ onNavigate, onBack, siteId, entryToEdit
     entryToEdit?.type === 'material' && !MATERIAL_PRESETS.find(p => p.label === entryToEdit.category)
       ? entryToEdit.category : ''
   )
-  const [miscCat, setMiscCat] = useState(entryToEdit?.type === 'misc' ? entryToEdit.category : 'food')
+  const [matInputType, setMatInputType] = useState(entryToEdit?.qty && entryToEdit?.unitPrice ? 'qty' : 'direct')
+  const [miscPreset, setMiscPreset] = useState(() => {
+    if (entryToEdit?.type === 'misc') {
+      return MISC_PRESETS.find(p => p.id === entryToEdit.category || p.label === entryToEdit.category) || MISC_PRESETS[0]
+    }
+    return MISC_PRESETS[0]
+  })
   const [qty, setQty] = useState(entryToEdit?.qty ? String(entryToEdit.qty) : '')
   const [unitPrice, setUnitPrice] = useState(entryToEdit?.unitPrice ? String(entryToEdit.unitPrice) : '')
   const [amount, setAmount] = useState(entryToEdit?.amount ? String(entryToEdit.amount) : '')
@@ -57,27 +94,29 @@ export default function AddEntryScreen({ onNavigate, onBack, siteId, entryToEdit
     )
   }
 
-  const qtyTotal = parseFloat(qty) && parseFloat(unitPrice) ? parseFloat(qty) * parseFloat(unitPrice) : null
+  const qtyTotal = (activeTab === 'material' && matInputType === 'qty' && parseFloat(qty) && parseFloat(unitPrice)) 
+    ? parseFloat(qty) * parseFloat(unitPrice) 
+    : null
 
   const handleSave = async () => {
-    const finalAmount = qtyTotal ?? parseFloat(amount)
+    const finalAmount = (activeTab === 'material' && matInputType === 'qty') ? qtyTotal : parseFloat(amount)
     if (!finalAmount || finalAmount <= 0) return
 
-    const category = activeTab === 'labor' ? t[laborCat] || laborCat
+    const category = activeTab === 'labor' ? laborPreset.label
       : activeTab === 'material' ? (matPreset.label === 'Other' ? customMat : matPreset.label)
-      : t[miscCat] || miscCat
+      : miscPreset.label
 
     const data = {
       siteId, type: activeTab, category,
       amount: finalAmount, date, note,
-      qty: parseFloat(qty) || null,
-      unitPrice: parseFloat(unitPrice) || null,
-      qtyDetail: qty && unitPrice ? `${qty} × ₹${unitPrice}` : ''
+      qty: (activeTab === 'material' && matInputType === 'qty') ? (parseFloat(qty) || null) : null,
+      unitPrice: (activeTab === 'material' && matInputType === 'qty') ? (parseFloat(unitPrice) || null) : null,
+      qtyDetail: (activeTab === 'material' && matInputType === 'qty' && qty && unitPrice) ? `${qty} × ₹${unitPrice}` : ''
     }
 
     if (isEditing) await updateEntry(entryToEdit.id, data)
     else await addEntry(data)
-    onNavigate('ledger', { siteId })
+    onBack()
   }
 
   const tabBtn = (id, label) => (
@@ -147,9 +186,25 @@ export default function AddEntryScreen({ onNavigate, onBack, siteId, entryToEdit
           {/* Labor */}
           {activeTab === 'labor' && (
             <div>
-              <p className="t-section-label">{t.laborType}</p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                {LABOR_CATS.map(cat => catBtn(cat, t[cat] || cat, laborCat === cat, () => setLaborCat(cat)))}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+                {LABOR_PRESETS.map(p => (
+                  <button
+                    key={p.id}
+                    onClick={() => setLaborPreset(p)}
+                    style={{
+                      height: 64, padding: '8px 4px', borderRadius: 12,
+                      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6,
+                      fontSize: 11, fontWeight: 600, cursor: 'pointer',
+                      background: laborPreset.id === p.id ? 'var(--bg3)' : 'transparent',
+                      color: laborPreset.id === p.id ? 'var(--text)' : 'var(--text3)',
+                      border: laborPreset.id === p.id ? '1px solid var(--border)' : '1px solid transparent',
+                      transition: 'all 0.15s'
+                    }}
+                  >
+                    <p.icon size={20} strokeWidth={2} />
+                    <span style={{ textAlign: 'center', lineHeight: 1.1 }}>{matLabel(p)}</span>
+                  </button>
+                ))}
               </div>
             </div>
           )}
@@ -158,24 +213,23 @@ export default function AddEntryScreen({ onNavigate, onBack, siteId, entryToEdit
           {activeTab === 'material' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               <div>
-                <p className="t-section-label">{t.materialType}</p>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
                   {MATERIAL_PRESETS.map(p => (
                     <button
                       key={p.label}
                       onClick={() => setMatPreset(p)}
                       style={{
-                        height: 52, padding: '0 14px', borderRadius: 12,
-                        display: 'flex', alignItems: 'center', gap: 10,
-                        fontSize: 14, fontWeight: 600, cursor: 'pointer',
-                        background: matPreset.label === p.label ? 'var(--btn-bg)' : 'var(--bg2)',
-                        color: matPreset.label === p.label ? 'var(--btn-text)' : 'var(--text)',
-                        border: matPreset.label === p.label ? 'none' : '1px solid var(--border)',
+                        height: 64, padding: '8px 4px', borderRadius: 12,
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6,
+                        fontSize: 11, fontWeight: 600, cursor: 'pointer',
+                        background: matPreset.label === p.label ? 'var(--bg3)' : 'transparent',
+                        color: matPreset.label === p.label ? 'var(--text)' : 'var(--text3)',
+                        border: matPreset.label === p.label ? '1px solid var(--border)' : '1px solid transparent',
                         transition: 'all 0.15s'
                       }}
                     >
-                      <span>{p.icon}</span>
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{matLabel(p)}</span>
+                      <p.icon size={20} strokeWidth={2} />
+                      <span style={{ textAlign: 'center', lineHeight: 1.1 }}>{matLabel(p)}</span>
                     </button>
                   ))}
                 </div>
@@ -191,24 +245,83 @@ export default function AddEntryScreen({ onNavigate, onBack, siteId, entryToEdit
                 </div>
               )}
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                <div>
-                  <p className="t-section-label">{t.qtyLabel}</p>
-                  <input type="number" value={qty} onChange={e => setQty(e.target.value)} placeholder="0" className="t-input" />
-                </div>
-                <div>
-                  <p className="t-section-label">{t.priceLabel}</p>
-                  <input type="number" value={unitPrice} onChange={e => setUnitPrice(e.target.value)} placeholder="0" className="t-input" />
-                </div>
+              {/* Material Input Toggle */}
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button
+                  onClick={() => setMatInputType('qty')}
+                  style={{
+                    flex: 1, height: 44, borderRadius: 12, fontSize: 14, fontWeight: 700, cursor: 'pointer',
+                    background: matInputType === 'qty' ? 'var(--bg2)' : 'transparent',
+                    color: matInputType === 'qty' ? 'var(--text)' : 'var(--text3)',
+                    border: matInputType === 'qty' ? '1px solid var(--border)' : '1px solid transparent',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  🧮 Qty × Price
+                </button>
+                <button
+                  onClick={() => setMatInputType('direct')}
+                  style={{
+                    flex: 1, height: 44, borderRadius: 12, fontSize: 14, fontWeight: 700, cursor: 'pointer',
+                    background: matInputType === 'direct' ? 'var(--text)' : 'transparent',
+                    color: matInputType === 'direct' ? 'var(--bg)' : 'var(--text3)',
+                    border: matInputType === 'direct' ? 'none' : '1px solid transparent',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  ₹ Direct Amount
+                </button>
               </div>
 
-              {qtyTotal && (
+              {matInputType === 'qty' && (
                 <div style={{
-                  padding: '14px 18px', background: 'var(--bg2)', border: '1px solid var(--border)',
-                  borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                  background: 'var(--bg2)', border: '1px solid var(--border)',
+                  borderRadius: 16, padding: '16px', marginTop: 4
                 }}>
-                  <span style={{ fontSize: 13, color: 'var(--text2)', fontWeight: 600 }}>{qty} × ₹{unitPrice}</span>
-                  <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>= ₹{qtyTotal.toLocaleString('en-IN')}</span>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                    <div>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>
+                        {t.qtyLabel}
+                      </p>
+                      <input 
+                        type="number" onWheel={e => e.target.blur()} 
+                        value={qty} onChange={e => setQty(e.target.value)} 
+                        placeholder="0" 
+                        style={{
+                          width: '100%', height: 48, borderRadius: 12, border: '1px solid var(--border)',
+                          background: 'var(--bg)', color: 'var(--text)', fontSize: 18, fontWeight: 700,
+                          padding: '0 16px', outline: 'none'
+                        }} 
+                      />
+                    </div>
+                    <div>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>
+                        ₹ {t.priceLabel}
+                      </p>
+                      <input 
+                        type="number" onWheel={e => e.target.blur()} 
+                        value={unitPrice} onChange={e => setUnitPrice(e.target.value)} 
+                        placeholder="0" 
+                        style={{
+                          width: '100%', height: 48, borderRadius: 12, border: '1px solid var(--border)',
+                          background: 'var(--bg)', color: 'var(--text)', fontSize: 18, fontWeight: 700,
+                          padding: '0 16px', outline: 'none'
+                        }} 
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ height: 1, background: 'var(--border)', margin: '20px 0 16px' }} />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                      TOTAL SPENT
+                    </span>
+                    <span style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', lineHeight: 1 }}>
+                      ₹{qtyTotal ? qtyTotal.toLocaleString('en-IN') : '0'}
+                    </span>
+                  </div>
                 </div>
               )}
             </div>
@@ -217,27 +330,61 @@ export default function AddEntryScreen({ onNavigate, onBack, siteId, entryToEdit
           {/* Misc */}
           {activeTab === 'misc' && (
             <div>
-              <p className="t-section-label">{t.category}</p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                {MISC_CATS.map(cat => catBtn(cat, t[cat] || cat, miscCat === cat, () => setMiscCat(cat)))}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+                {MISC_PRESETS.map(p => (
+                  <button
+                    key={p.id}
+                    onClick={() => setMiscPreset(p)}
+                    style={{
+                      height: 64, padding: '8px 4px', borderRadius: 12,
+                      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6,
+                      fontSize: 11, fontWeight: 600, cursor: 'pointer',
+                      background: miscPreset.id === p.id ? 'var(--bg3)' : 'transparent',
+                      color: miscPreset.id === p.id ? 'var(--text)' : 'var(--text3)',
+                      border: miscPreset.id === p.id ? '1px solid var(--border)' : '1px solid transparent',
+                      transition: 'all 0.15s'
+                    }}
+                  >
+                    <p.icon size={20} strokeWidth={2} />
+                    <span style={{ textAlign: 'center', lineHeight: 1.1 }}>{matLabel(p)}</span>
+                  </button>
+                ))}
               </div>
             </div>
           )}
 
           {/* Amount (when no qty×price) */}
-          {!(activeTab === 'material' && qtyTotal) && (
+          {!(activeTab === 'material' && matInputType === 'qty') && (
             <div>
-              <p className="t-section-label">{t.amount}</p>
+              <p className="t-section-label">AMOUNT (₹) *</p>
               <div style={{ position: 'relative' }}>
                 <span style={{
                   position: 'absolute', left: 18, top: '50%', transform: 'translateY(-50%)',
                   fontSize: 20, fontWeight: 700, color: 'var(--text3)'
                 }}>₹</span>
                 <input
-                  type="number" value={amount} onChange={e => setAmount(e.target.value)}
+                  type="number" onWheel={e => e.target.blur()} value={amount} onChange={e => setAmount(e.target.value)}
                   placeholder="0" className="t-input"
                   style={{ paddingLeft: 42, fontSize: 22, fontWeight: 700 }}
                 />
+              </div>
+
+              {/* Quick Amounts */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 16 }}>
+                {QUICK_AMOUNTS.map(amt => (
+                  <button
+                    key={amt}
+                    onClick={() => setAmount(String(amt))}
+                    style={{
+                      padding: '8px 16px', borderRadius: 8, border: '1px solid var(--border)',
+                      background: amount === String(amt) ? 'var(--bg2)' : 'transparent',
+                      color: amount === String(amt) ? 'var(--text)' : 'var(--text2)',
+                      fontSize: 13, fontWeight: 600, cursor: 'pointer', flex: '1 1 calc(25% - 8px)', minWidth: 60
+                    }}
+                  >
+                    ₹{amt}
+                  </button>
+                ))}
               </div>
             </div>
           )}

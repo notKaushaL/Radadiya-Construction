@@ -1,4 +1,4 @@
-import { ArrowLeft, TrendingUp, Trash2, Calendar, FileText, Wallet, ArrowDownCircle } from 'lucide-react'
+import { ArrowLeft, TrendingUp, Trash2, Calendar, FileText, Wallet, ArrowDownCircle, Share2 } from 'lucide-react'
 import useStore from '../store/useStore'
 import { formatINR } from '../utils/helpers'
 import { useLang } from '../App'
@@ -36,6 +36,16 @@ export default function SiteSummaryScreen({ onNavigate, onBack, siteId }) {
             </h1>
             <p className="t-caption" style={{ marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.12em' }}>{t.projectReport}</p>
           </div>
+          <button onClick={() => {
+            const msg = useStore.getState().generateWhatsAppSummary(siteId)
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank')
+          }} style={{
+            width: 44, height: 44, borderRadius: '50%', background: 'var(--bg2)',
+            border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0, cursor: 'pointer'
+          }}>
+            <Share2 size={19} color="var(--text)" />
+          </button>
         </div>
       </div>
 

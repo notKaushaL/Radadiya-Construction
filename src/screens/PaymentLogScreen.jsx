@@ -26,7 +26,7 @@ export default function PaymentLogScreen({ onNavigate, onBack, siteId }) {
   const handleSave = async () => {
     if (!amount || parseFloat(amount) <= 0) return
     await addPayment({ siteId, amount: parseFloat(amount), method, date, note })
-    onNavigate('siteSummary', { siteId })
+    onBack()
   }
 
   const methods = [
@@ -62,6 +62,7 @@ export default function PaymentLogScreen({ onNavigate, onBack, siteId }) {
               }}>₹</span>
               <input
                 type="number" autoFocus value={amount}
+                onWheel={e => e.target.blur()}
                 onChange={e => setAmount(e.target.value)}
                 placeholder="0"
                 className="t-input"
