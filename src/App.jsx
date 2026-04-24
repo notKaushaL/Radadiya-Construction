@@ -35,7 +35,6 @@ export default function App() {
 
   const [showExitAlert, setShowExitAlert] = useState(false)
   const [isShutdown, setIsShutdown]       = useState(false)
-  const [isLanding, setIsLanding]         = useState(true)
   const { theme, language, loadFromCloud } = useStore()
 
   // Initialize DB + cloud sync on mount
@@ -50,9 +49,13 @@ export default function App() {
     startup()
   }, [])
 
-  // Apply theme
+  // Apply theme and update meta theme-color for status bar
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute('content', theme === 'dark' ? '#161616' : '#FFFFFF')
+    }
   }, [theme])
 
   // ── Forward navigation: push onto the stack ──────────────────────────────
@@ -89,7 +92,7 @@ export default function App() {
   // ── Browser back button: mirrors goBack() ───────────────────────────────
   useEffect(() => {
     const handlePopState = () => {
-      if (isShutdown || isLanding) return
+      if (isShutdown) return
       const stack = navStackRef.current
       if (stack.length <= 1) {
         setShowExitAlert(true)
@@ -101,15 +104,9 @@ export default function App() {
     window.history.pushState({ depth: 0 }, '')
     window.addEventListener('popstate', handlePopState)
     return () => window.removeEventListener('popstate', handlePopState)
-  }, [isShutdown, isLanding])
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLanding(false), 2600)
-    return () => clearTimeout(timer)
-  }, [])
+  }, [isShutdown])
 
   if (isShutdown) return <ShutdownScreen />
-  if (isLanding)  return <LandingScreen />
 
   const lang = TRANSLATIONS[language] || TRANSLATIONS.en
 
@@ -169,51 +166,6 @@ export default function App() {
         )}
       </div>
     </LangContext.Provider>
-  )
-}
-
-function LandingScreen() {
-  return (
-    <div style={{
-      position: 'fixed', inset: 0, zIndex: 500, background: '#FFFFFF',
-      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 32
-    }}>
-      <div style={{ position: 'relative', width: 152, height: 152, marginBottom: 30 }}>
-        <svg
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', transform: 'rotate(-90deg)' }}
-          viewBox="0 0 100 100"
-        >
-          <circle cx="50" cy="50" r="44" fill="none" stroke="#EBEBEB" strokeWidth="1.5" />
-          <circle cx="50" cy="50" r="44" fill="none"
-            stroke="#FDE047" strokeWidth="4.2"
-            strokeLinecap="round" className="animate-trace"
-          />
-        </svg>
-        <div style={{
-          position: 'absolute', inset: 11,
-          borderRadius: '50%', overflow: 'hidden', background: '#fff',
-          boxShadow: '0 2px 14px rgba(0,0,0,0.07)'
-        }}>
-          <img src="/logo.jpeg" alt="Radadiya Construction"
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-        </div>
-      </div>
-      <div style={{ textAlign: 'center', userSelect: 'none' }}>
-        <h1 className="animate-title-glow" style={{
-          fontSize: 20, fontWeight: 800, color: '#111111',
-          letterSpacing: '-0.01em', margin: '0 0 10px'
-        }}>
-          Radadiya Construction
-        </h1>
-        <p style={{
-          fontSize: 9, fontWeight: 700, color: '#AAAAAA',
-          textTransform: 'uppercase', letterSpacing: '0.38em', margin: 0
-        }}>
-          VADODARA · INDIA
-        </p>
-      </div>
-    </div>
   )
 }
 

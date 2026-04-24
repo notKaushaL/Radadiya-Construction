@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Download, Trash2, Share2, ChevronRight, Moon, Sun, ArrowLeft, SmartphoneIcon, ShieldAlert, Check, Cloud, Database } from 'lucide-react'
+import { Download, Trash2, Share2, ChevronRight, Moon, Sun, ArrowLeft, SmartphoneIcon, ShieldAlert, Check, Cloud, Database, Edit2, User } from 'lucide-react'
 import useStore from '../store/useStore'
 import { formatINR } from '../utils/helpers'
 import { useLang } from '../App'
@@ -9,7 +9,7 @@ export default function SettingsScreen({ onNavigate, onBack }) {
   const {
     sites, clearAllData, deleteSite, exportData, generateWhatsAppSummary,
     getGrandTotal, getSiteTotal, theme, setTheme, language, setLanguage,
-    syncConfig, setSyncConfig
+    syncConfig, setSyncConfig, profile, setProfile
   } = useStore()
 
   const lang = useLang()
@@ -20,6 +20,11 @@ export default function SettingsScreen({ onNavigate, onBack }) {
   const [syncModalOpen, setSyncModalOpen] = useState(false)
   const [dbUrl, setDbUrl] = useState(syncConfig?.url || '')
   const [dbToken, setDbToken] = useState(syncConfig?.token || '')
+  
+  const [profileModalOpen, setProfileModalOpen] = useState(false)
+  const [editProfileName, setEditProfileName] = useState(profile?.name || '')
+  const [editProfilePhone, setEditProfilePhone] = useState(profile?.phone || '')
+  const [editProfileAddress, setEditProfileAddress] = useState(profile?.address || '')
 
   const grandTotal = getGrandTotal()
   const siteToDelete = sites.find(s => s.id === deleteSiteId)
@@ -84,20 +89,39 @@ export default function SettingsScreen({ onNavigate, onBack }) {
           {/* Profile */}
           <div style={{
             display: 'flex', alignItems: 'center', gap: 16, padding: '20px 18px',
-            background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 18
+            background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 18,
+            position: 'relative'
           }}>
+            <button 
+              onClick={() => {
+                setEditProfileName(profile?.name || '')
+                setEditProfilePhone(profile?.phone || '')
+                setEditProfileAddress(profile?.address || '')
+                setProfileModalOpen(true)
+              }}
+              style={{
+                position: 'absolute', top: 16, right: 16, width: 32, height: 32, borderRadius: '50%',
+                background: 'var(--bg)', border: '1px solid var(--border)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+              }}
+            >
+              <Edit2 size={14} color="var(--text3)" />
+            </button>
             <div style={{
               width: 56, height: 56, borderRadius: '50%', overflow: 'hidden',
-              background: '#FFFFFF', flexShrink: 0,
-              boxShadow: '0 0 0 1.5px var(--border)'
+              background: 'var(--bg)', flexShrink: 0,
+              boxShadow: '0 0 0 1.5px var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center'
             }}>
-              <img src="/logo.jpeg" alt="Logo"
-                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-              />
+              <User size={24} color="var(--text3)" />
             </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontSize: 17, fontWeight: 800, color: 'var(--text)', margin: 0 }}>Radadiya Construction</p>
-              <p className="t-caption" style={{ marginTop: 3, textTransform: 'uppercase', letterSpacing: '0.15em' }}>VADODARA · INDIA</p>
+            <div style={{ flex: 1, minWidth: 0, paddingRight: 24 }}>
+              <p style={{ fontSize: 17, fontWeight: 800, color: 'var(--text)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {profile?.name || 'Your Name'}
+              </p>
+              <p className="t-caption" style={{ marginTop: 3, textTransform: 'uppercase', letterSpacing: '0.15em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {profile?.address || 'Your Address'}
+              </p>
+              {profile?.phone && <p className="t-caption" style={{ marginTop: 1, color: 'var(--text3)' }}>{profile.phone}</p>}
             </div>
           </div>
 
@@ -181,7 +205,7 @@ export default function SettingsScreen({ onNavigate, onBack }) {
           {/* Manage Sites */}
           {sites.length > 0 && (
             <div>
-              <p className="t-section-label">{lang.managesites}</p>
+              <p className="t-section-label">Project Administration</p>
               <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 14, overflow: 'hidden' }}>
                 {sites.map((site, i) => (
                   <div key={site.id} style={{
@@ -190,10 +214,17 @@ export default function SettingsScreen({ onNavigate, onBack }) {
                     borderTop: i > 0 ? '1px solid var(--border)' : 'none'
                   }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {site.name}
-                      </p>
-                      <p style={{ fontSize: 12, color: 'var(--text3)', margin: '2px 0 0', fontWeight: 500 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                        <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {site.name}
+                        </p>
+                        {site.status === 'completed' && (
+                          <span style={{ fontSize: 9, fontWeight: 800, color: 'var(--text3)', textTransform: 'uppercase', padding: '2px 6px', background: 'var(--bg)', borderRadius: 4, border: '1px solid var(--border)' }}>
+                            Completed
+                          </span>
+                        )}
+                      </div>
+                      <p style={{ fontSize: 12, color: 'var(--text3)', margin: 0, fontWeight: 500 }}>
                         {formatINR(getSiteTotal(site.id))}
                       </p>
                     </div>
@@ -316,6 +347,56 @@ export default function SettingsScreen({ onNavigate, onBack }) {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {profileModalOpen && (
+        <div className="t-overlay" onClick={() => setProfileModalOpen(false)}>
+          <div className="t-modal animate-slide-up" onClick={e => e.stopPropagation()}>
+            <div style={{ width: 40, height: 4, borderRadius: 4, background: 'var(--border)', margin: '0 auto 24px' }} />
+            <h2 className="t-heading" style={{ marginBottom: 4, fontSize: 20 }}>Edit Profile</h2>
+            <p className="t-caption" style={{ marginBottom: 20 }}>This information will appear on WhatsApp exports.</p>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 24 }}>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--text2)', marginLeft: 4, marginBottom: 6, display: 'block' }}>Contractor / Company Name *</label>
+                <input
+                  type="text" value={editProfileName} onChange={e => setEditProfileName(e.target.value)}
+                  placeholder="e.g. Radadiya Construction" className="t-input"
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--text2)', marginLeft: 4, marginBottom: 6, display: 'block' }}>Phone Number</label>
+                <input
+                  type="tel" inputMode="numeric" pattern="[0-9]*" maxLength={10} value={editProfilePhone} onChange={e => setEditProfilePhone(e.target.value.replace(/\D/g, '').slice(0,10))}
+                  placeholder="e.g. 9876543210" className="t-input"
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--text2)', marginLeft: 4, marginBottom: 6, display: 'block' }}>Address / City</label>
+                <input
+                  type="text" value={editProfileAddress} onChange={e => setEditProfileAddress(e.target.value)}
+                  placeholder="e.g. Vadodara, India" className="t-input"
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <button 
+                onClick={() => {
+                  setProfile({ name: editProfileName || 'Construction Company', phone: editProfilePhone, address: editProfileAddress })
+                  setProfileModalOpen(false)
+                }} 
+                className="btn-fab-full"
+                disabled={!editProfileName.trim()}
+              >
+                Save Profile
+              </button>
+              <button onClick={() => setProfileModalOpen(false)} style={{ height: 48, color: 'var(--text3)', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer' }}>
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}

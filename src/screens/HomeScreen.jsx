@@ -251,7 +251,7 @@ function ActiveSiteCard({ site, total, onNavigate, onEdit, t }) {
               </button>
             </div>
             <div style={{ textAlign: 'right', flexShrink: 0 }}>
-              <p style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', margin: 0, overflowWrap: 'anywhere', wordBreak: 'break-all', lineHeight: 1.3 }}>{formatINR(total)}</p>
+              <p style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', margin: 0, overflowWrap: 'anywhere', wordBreak: 'break-all', lineHeight: 1.3 }}>{formatINR(total)}</p>
               <p className="t-caption" style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 1 }}>{t.investment}</p>
             </div>
           </div>
@@ -369,7 +369,7 @@ function CompletedSiteCard({ site, total, paymentsTotal, onNavigate, onEdit, t }
               </button>
             </div>
             <div style={{ textAlign: 'right', flexShrink: 0, overflow: 'hidden' }}>
-              <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text2)', margin: 0, overflowWrap: 'anywhere', wordBreak: 'break-all', lineHeight: 1.3 }}>{formatINR(total)}</p>
+              <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text2)', margin: 0, overflowWrap: 'anywhere', wordBreak: 'break-all', lineHeight: 1.3 }}>{formatINR(total)}</p>
               {balance > 0 ? (
                 <p style={{ fontSize: 9, fontWeight: 800, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '1px 0 0' }}>Due: {formatINR(balance)}</p>
               ) : (

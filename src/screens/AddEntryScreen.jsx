@@ -264,9 +264,9 @@ export default function AddEntryScreen({ onNavigate, onBack, siteId, entryToEdit
                   onClick={() => setMatInputType('direct')}
                   style={{
                     flex: 1, height: 44, borderRadius: 12, fontSize: 14, fontWeight: 700, cursor: 'pointer',
-                    background: matInputType === 'direct' ? 'var(--text)' : 'transparent',
-                    color: matInputType === 'direct' ? 'var(--bg)' : 'var(--text3)',
-                    border: matInputType === 'direct' ? 'none' : '1px solid transparent',
+                    background: matInputType === 'direct' ? 'var(--bg2)' : 'transparent',
+                    color: matInputType === 'direct' ? 'var(--text)' : 'var(--text3)',
+                    border: matInputType === 'direct' ? '1px solid var(--border)' : '1px solid transparent',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                     transition: 'all 0.2s'
                   }}
