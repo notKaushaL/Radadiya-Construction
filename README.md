@@ -1,16 +1,88 @@
-# React + Vite
+# Radadiya Construction – Project & Expense Management
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A mobile-first Progressive Web Application (PWA) designed to simplify construction business management. It helps manage construction sites, track expenses, record client payments, and monitor project finances from one place.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Site Management:** Manage multiple construction sites and view their individual records.
+- **Expense Tracking:** Record and monitor expenses for each construction site.
+- **Client Income Tracking:** Maintain records of payments and income received from clients.
+- **Payment Logs:** Keep track of financial transactions and payment history.
+- **Project Summaries:** Get an overview of project-wise income and expenses.
+- **Mobile-First Design:** Responsive interface designed for convenient use on mobile devices.
+- **PWA Support:** Installable application experience for supported devices.
+- **State Management:** Uses Zustand to manage application state.
+- **Data Management:** Uses Turso (LibSQL) for database connectivity and local persistence for application data.
+- **Biometric Access:** Supports biometric authentication on compatible devices, where configured.
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Technology | Purpose |
+|---|---|
+| React | Frontend UI |
+| Vite | Development and build tool |
+| JavaScript | Application logic |
+| Tailwind CSS | Styling and responsive UI |
+| Zustand | State management |
+| Turso (LibSQL) | Database |
+| Lucide React | Icons |
+| date-fns | Date formatting and utilities |
+| Vite PWA Plugin | Progressive Web App support |
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Prerequisites
+
+Make sure you have the following installed:
+
+- Node.js
+- npm
+
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/notKaushaL/Radadiya-Construction.git
+   ```
+
+2. Navigate to the project directory:
+
+   ```bash
+   cd Radadiya-Construction
+   ```
+
+3. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+4. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+5. Open the local URL displayed in your terminal.
+
+## Project Purpose
+
+The application was developed to digitize everyday construction business operations and reduce dependence on manual registers and scattered records.
+
+It provides a centralized way to manage multiple construction sites, maintain financial records, and get a clearer picture of project-wise expenses and income.
+
+## Future Improvements
+
+- Advanced financial reports and analytics
+- Exportable expense and payment reports
+- Improved role-based access for multiple users
+- Enhanced synchronization and backup options
+- Additional project monitoring features
+
+## Author
+
+**Kaushal Radadiya**
+
+- GitHub: [@notKaushaL](https://github.com/notKaushaL)
+- LinkedIn: [Kaushal Radadiya](https://linkedin.com/in/notkaushal)
